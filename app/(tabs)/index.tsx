@@ -1,9 +1,10 @@
-import { Image, Platform, StyleSheet } from "react-native";
+import { Image, Platform, StyleSheet, Text, View } from "react-native";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import React from "react";
 
 export default function HomeScreen() {
   return (
@@ -17,6 +18,9 @@ export default function HomeScreen() {
       }
     >
       <ThemedView style={styles.titleContainer}>
+      <View className="flex-1 bg-red-500">
+          <Text>Hello World</Text>
+        </View> 
         <ThemedText type="title">Welcome! Dillion!</ThemedText>
         <HelloWave />
       </ThemedView>
@@ -37,6 +41,7 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
+     
         <ThemedText type="subtitle">Step 2: Explore</ThemedText>
         <ThemedText>
           Tap the Explore tab to learn more about what's included in this
