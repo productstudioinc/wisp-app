@@ -63,17 +63,17 @@ export default function WelcomeScreen() {
       <View className="mx-auto w-full flex-1 justify-between px-8 py-4">
         <Animated.View
           className="pt-16"
-          entering={FadeInDown.delay(300).duration(1000).springify()}
+          entering={FadeInDown.delay(0).duration(1000).springify()}
         >
           <Animated.Text
             className="text-3xl font-black text-left mb-1"
-            entering={FadeInDown.delay(600).duration(1000).springify()}
+            entering={FadeInDown.delay(300).duration(1000).springify()}
           >
             Welcome to
           </Animated.Text>
           <Animated.Text
             className="text-6xl font-black text-left text-[#007AFF]"
-            entering={FadeInDown.delay(900).duration(1000).springify()}
+            entering={FadeInDown.delay(600).duration(1000).springify()}
           >
             Wisp AI
           </Animated.Text>
