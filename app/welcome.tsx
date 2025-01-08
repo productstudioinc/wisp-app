@@ -97,27 +97,21 @@ export default function WelcomeScreen() {
 
         <View className="gap-6 pb-8">
           <View className="items-center">
-            <MaterialIcons name="people" size={24} color="#007AFF" />
+            <MaterialIcons name="people" size={24} color="black" />
             <Text className="pt-2 text-center text-[15px] text-gray-500">
               By pressing continue, you agree to our{" "}
-              <Text
-                className="text-[#007AFF]"
-                onPress={() => Linking.openURL("#")}
-              >
+              <Text className="text-black" onPress={() => Linking.openURL("#")}>
                 Terms of Service
               </Text>{" "}
               and that you have read our{" "}
-              <Text
-                className="text-[#007AFF]"
-                onPress={() => Linking.openURL("#")}
-              >
+              <Text className="text-black" onPress={() => Linking.openURL("#")}>
                 Privacy Policy
               </Text>
             </Text>
           </View>
 
           <TouchableOpacity
-            className="bg-[#007AFF] py-4 rounded-xl"
+            className="bg-black py-4 rounded-full"
             onPress={handleContinue}
           >
             <Text className="text-white text-center font-semibold text-[17px]">

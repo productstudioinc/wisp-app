@@ -154,7 +154,7 @@ export default function WelcomeScreen() {
           activeDotStyle={{
             width: Math.floor(width / onboardingSteps.length) - 10,
             height: 4,
-            backgroundColor: "#007AFF",
+            backgroundColor: "#000000",
           }}
           containerStyle={{
             gap: 10,
