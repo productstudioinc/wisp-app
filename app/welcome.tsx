@@ -22,26 +22,30 @@ type OnboardingStep = {
 
 const onboardingSteps: OnboardingStep[] = [
   {
-    title: "Website Creation",
+    title: "Describe Your Dream App",
     description:
-      "Create beautiful mobile-optimized websites in minutes using AI",
-    icon: <MaterialIcons name="web" size={24} className="text-blue-500" />,
-  },
-  {
-    title: "AI-Powered Design",
-    description:
-      "Let AI generate stunning layouts and designs tailored to your needs",
+      "Tell us your idea - from romantic games to personal planners - and watch it come to life",
     icon: (
-      <MaterialIcons name="auto-awesome" size={24} className="text-blue-500" />
+      <MaterialIcons name="lightbulb" size={24} className="text-blue-500" />
     ),
   },
   {
-    title: "Mobile Optimization",
+    title: "AI Creates Your Design",
     description:
-      "Your website will look and work perfectly on all mobile devices",
+      "Our AI transforms your vision into a beautiful, professional app in minutes",
     icon: (
-      <MaterialIcons name="phone-iphone" size={24} className="text-blue-500" />
+      <MaterialIcons
+        name="auto-awesome-motion"
+        size={24}
+        className="text-blue-500"
+      />
     ),
+  },
+  {
+    title: "Share With Anyone",
+    description:
+      "Your app works perfectly on all devices - ready to surprise and delight",
+    icon: <MaterialIcons name="share" size={24} className="text-blue-500" />,
   },
 ];
 
