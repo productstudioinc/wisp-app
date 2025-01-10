@@ -20,7 +20,9 @@ export default function SubscriptionScreen() {
     },
   ];
 
-  const handleContinue = () => {};
+  const handleContinue = () => {
+    router.push('/(tabs)');
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
