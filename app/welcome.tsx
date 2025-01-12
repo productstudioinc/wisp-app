@@ -36,7 +36,7 @@ const onboardingSteps: OnboardingStep[] = [
   {
     title: 'Share With Anyone',
     description: 'Your app works perfectly on all devices - ready to surprise and delight',
-    icon: <MaterialIcons name="share" className="text-white" size={24} />,
+    icon: <MaterialIcons name="share" className="text-primary" size={24} />,
   },
 ];
 
