@@ -19,14 +19,15 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.wisp-app",
+      "bundleIdentifier": "com.productstudio.wisp",
       "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.productstudio.wisp"
     },
     "web": {
       "bundler": "metro",
@@ -45,7 +46,8 @@
         }
       ],
       "expo-apple-authentication",
-      "expo-localization"
+      "expo-localization",
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true
