@@ -12,7 +12,8 @@
     "web": "expo start -c --web",
     "clean": "rm -rf .expo node_modules",
     "postinstall": "npx tailwindcss -i ./global.css -o ./node_modules/.cache/nativewind/global.css",
-    "build:ios": "eas build --profile development --platform ios"
+    "build:ios": "eas build --profile development --platform ios",
+    "build:android": "eas build --profile development --platform android"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
