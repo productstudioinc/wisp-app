@@ -55,7 +55,7 @@ export default function WelcomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-primary-background">
-      <View className="mx-auto w-full flex-1 justify-between px-8 py-4">
+      <View className="mx-auto w-full flex-1 justify-between px-8">
         <Animated.View className="pt-16" entering={FadeInDown.delay(0).duration(1000).springify()}>
           <Animated.Text
             className="text-3xl font-black text-left mb-1 text-primary"
