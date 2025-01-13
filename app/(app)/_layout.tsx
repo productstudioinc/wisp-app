@@ -2,12 +2,5 @@ import { Stack } from 'expo-router';
 import { ThemeToggle } from '~/components/ThemeToggle';
 
 export default function AppLayout() {
-  return (
-    <Stack
-      screenOptions={{
-        headerShown: true,
-        headerRight: () => <ThemeToggle />,
-      }}
-    />
-  );
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
