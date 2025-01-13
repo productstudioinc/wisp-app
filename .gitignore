@@ -63,3 +63,6 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 Pods/
+
+android/
+ios/

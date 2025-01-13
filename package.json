@@ -16,11 +16,13 @@
     "build:android": "eas build --profile development --platform android"
   },
   "dependencies": {
+    "@ai-sdk/react": "^1.0.10",
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@rn-primitives/avatar": "~1.1.0",
+    "@rn-primitives/dialog": "^1.1.0",
     "@rn-primitives/label": "^1.1.0",
     "@rn-primitives/portal": "~1.1.0",
     "@rn-primitives/progress": "~1.1.0",

@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React from 'react';
 import { IconHome, IconHomeFilled } from '@tabler/icons-react-native';
 import { cssInterop } from 'nativewind';
@@ -88,6 +87,12 @@ export default function TabsLayout() {
               }}
             />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="chat"
+        options={{
+          title: 'Chat',
         }}
       />
     </Tabs>
