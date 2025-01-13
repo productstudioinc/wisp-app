@@ -182,7 +182,7 @@ export default function WelcomeScreen() {
   const handleContinue = async () => {
     try {
       await AsyncStorage.setItem('onboarding_complete', 'true');
-      router.push('/subscribe');
+      router.push('/(tabs)');
     } catch (error) {
       console.error('Error saving onboarding status:', error);
     }

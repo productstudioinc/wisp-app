@@ -1,8 +1,8 @@
 import { ExpoConfig } from 'expo/config';
 
 const config: ExpoConfig = {
-  name: "wisp-app",
-  slug: "wisp-app",
+  name: "Wisp",
+  slug: "wisp",
   owner: "productstudioinc",
   version: "1.0.0",
   orientation: "portrait",
