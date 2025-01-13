@@ -2,12 +2,10 @@ import { cssInterop } from 'nativewind';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Dimensions, Linking, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { Linking, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const { width } = Dimensions.get('window');
 
 type OnboardingStep = {
   title: string;
@@ -41,13 +39,12 @@ const onboardingSteps: OnboardingStep[] = [
 ];
 
 export default function WelcomeScreen() {
-  const [currentStep, setCurrentStep] = useState(0);
   const router = useRouter();
 
   const handleContinue = async () => {
     try {
       await AsyncStorage.setItem('onboarding_complete', 'true');
-      router.push('/onboarding');
+      router.push('/(auth)/onboarding');
     } catch (error) {
       console.error('Error saving onboarding status:', error);
     }

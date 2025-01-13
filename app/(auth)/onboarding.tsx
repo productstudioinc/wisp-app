@@ -9,10 +9,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
 import { Label } from '~/components/ui/label';
 import { Input } from '~/components/ui/input';
+import { Auth } from '~/components/Auth.native';
 
 const { width } = Dimensions.get('window');
 type OnboardingStep = {
-  type: 'website-purpose' | 'website-type';
+  type: 'website-purpose' | 'website-type' | 'sign-in';
   component: React.ComponentType;
 };
 
@@ -157,6 +158,20 @@ const WebsiteTypeStep = () => {
   );
 };
 
+const SignInStep = () => {
+  return (
+    <View className="flex-1 px-6">
+      <Text className="text-4xl font-bold mb-2 text-foreground">Sign in to continue</Text>
+      <Text className="text-lg text-muted-foreground mb-8">
+        Create an account or sign in to save your progress
+      </Text>
+      <View className="items-center justify-center flex-1">
+        <Auth />
+      </View>
+    </View>
+  );
+};
+
 const onboardingSteps: OnboardingStep[] = [
   {
     type: 'website-purpose',
@@ -166,9 +181,13 @@ const onboardingSteps: OnboardingStep[] = [
     type: 'website-type',
     component: WebsiteTypeStep,
   },
+  {
+    type: 'sign-in',
+    component: SignInStep,
+  },
 ];
 
-export default function WelcomeScreen() {
+export default function OnboardingScreen() {
   const progress = useSharedValue<number>(0);
   const router = useRouter();
   const CAROUSEL_WIDTH = width - 32;
@@ -180,23 +199,20 @@ export default function WelcomeScreen() {
   };
 
   const handleContinue = async () => {
-    try {
-      await AsyncStorage.setItem('onboarding_complete', 'true');
-      router.push('/(tabs)');
-    } catch (error) {
-      console.error('Error saving onboarding status:', error);
+    if (progress.value < onboardingSteps.length - 1) {
+      carouselRef.current?.scrollTo({
+        count: 1,
+        animated: true,
+      });
     }
   };
 
   const onPressPagination = (index: number) => {
-    console.log(index, progress);
     carouselRef.current?.scrollTo({
       count: index - progress.value,
       animated: true,
     });
   };
-
-  console.log(Math.floor(width / onboardingSteps.length));
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -238,24 +254,15 @@ export default function WelcomeScreen() {
         />
       </View>
 
-      <View className="px-6 pb-8">
-        <TouchableOpacity
-          className="bg-primary py-4 rounded-full"
-          onPress={() => {
-            if (progress.value < onboardingSteps.length - 1) {
-              carouselRef.current?.scrollTo({
-                count: 1,
-                animated: true,
-              });
-            } else {
-              handleContinue();
-            }
-          }}>
-          <Text className="text-primary-foreground text-center font-semibold text-lg">
-            {progress.value < onboardingSteps.length - 1 ? 'Next' : 'Continue'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {progress.value < onboardingSteps.length - 1 && (
+        <View className="px-6 pb-8">
+          <TouchableOpacity className="bg-primary py-4 rounded-full" onPress={handleContinue}>
+            <Text className="text-center text-primary-foreground font-semibold text-lg">
+              Continue
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
