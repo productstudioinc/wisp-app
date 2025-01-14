@@ -11,13 +11,11 @@ const config: ExpoConfig = {
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
   splash: {
-    image: "./assets/images/splash.png",
-    resizeMode: "contain",
-    backgroundColor: "#ffffff"
+    image: './assets/images/splash.png',
+    resizeMode: 'contain',
+    backgroundColor: '#ffffff',
   },
-  assetBundlePatterns: [
-    "**/*"
-  ],
+  assetBundlePatterns: ['**/*'],
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.productstudio.wisp",
@@ -30,51 +28,51 @@ const config: ExpoConfig = {
   },
   android: {
     adaptiveIcon: {
-      foregroundImage: "./assets/images/adaptive-icon.png",
-      backgroundColor: "#ffffff"
+      foregroundImage: './assets/images/adaptive-icon.png',
+      backgroundColor: '#ffffff',
     },
-    package: "com.productstudio.wisp"
+    package: 'com.productstudio.wisp',
   },
   web: {
-    bundler: "metro",
-    output: "static",
-    favicon: "./assets/images/favicon.png"
+    bundler: 'metro',
+    output: 'static',
+    favicon: './assets/images/favicon.png',
   },
   plugins: [
-    "expo-router",
+    'expo-router',
     [
-      "expo-splash-screen",
+      'expo-splash-screen',
       {
-        image: "./assets/images/splash.png",
+        image: './assets/images/splash.png',
         imageWidth: 200,
-        resizeMode: "contain",
-        backgroundColor: "#ffffff"
-      }
+        resizeMode: 'contain',
+        backgroundColor: '#ffffff',
+      },
     ],
-    "expo-apple-authentication",
-    "expo-localization",
+    'expo-apple-authentication',
+    'expo-localization',
     [
-      "expo-build-properties",
+      'expo-build-properties',
       {
-        "android": {
-          "minSdkVersion": 26
-        }
-      }
+        android: {
+          minSdkVersion: 26,
+        },
+      },
     ],
-    "expo-font",
-    "expo-secure-store"
+    'expo-font',
+    'expo-secure-store',
   ],
   experiments: {
-    typedRoutes: true
+    typedRoutes: true,
   },
   extra: {
     router: {
-      origin: false
+      origin: false,
     },
     eas: {
-      projectId: "3d62779f-23ce-4e87-b81f-c2735e905cdb"
-    }
-  }
+      projectId: '3d62779f-23ce-4e87-b81f-c2735e905cdb',
+    },
+  },
 };
 
 export default config;
