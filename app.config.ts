@@ -3,11 +3,11 @@ import { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: "Wisp",
   slug: "wisp",
-  owner: "productstudioinc",
+  owner: "productstudio",
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
-  scheme: "myapp",
+  scheme: "wisp",
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
   splash: {
@@ -21,7 +21,12 @@ const config: ExpoConfig = {
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.productstudio.wisp",
-    usesAppleSignIn: true
+    usesAppleSignIn: true,
+    icon: {
+      light: "./assets/images/icon-light.png",
+      dark: "./assets/images/icon-dark.png",
+      tinted: "./assets/images/icon-tinted.png"
+    }
   },
   android: {
     adaptiveIcon: {
