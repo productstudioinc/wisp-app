@@ -100,7 +100,11 @@ const AnimatedPlaceholder = ({ text, opacity }: { text: string; opacity: number 
   );
 };
 
-export function CreateProjectSheet() {
+interface CreateProjectSheetProps {
+  onPresentRef?: (present: () => void) => void;
+}
+
+export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -145,6 +149,12 @@ export function CreateProjectSheet() {
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
+
+  useEffect(() => {
+    if (onPresentRef) {
+      onPresentRef(handlePresentModalPress);
+    }
+  }, [onPresentRef, handlePresentModalPress]);
 
   const handleSheetChanges = useCallback((index: number) => {
     if (index === -1) {
@@ -350,73 +360,67 @@ export function CreateProjectSheet() {
   };
 
   return (
-    <>
-      <Button onPress={handlePresentModalPress}>
-        <Text>Create</Text>
-      </Button>
-
-      <BottomSheetModal
-        ref={bottomSheetModalRef}
-        snapPoints={snapPoints}
-        onChange={handleSheetChanges}
-        enablePanDownToClose
-        enableDynamicSizing={false}
-        backdropComponent={renderBackdrop}
-        handleIndicatorStyle={{
-          backgroundColor: '#999',
-          width: 40,
-          height: 4,
-          marginTop: 10,
-        }}>
-        <BottomSheetView style={{ flex: 1 }} className="pt-4">
-          <View className="flex-1 px-6">
-            <View className="mb-6">
-              {step > 0 && (
-                <TouchableOpacity
-                  onPress={() => {
-                    setStep(0);
-                    progress.value = 0;
-                  }}
-                  className="mb-4 flex-row items-center">
-                  <ChevronLeft size={20} className="text-foreground" />
-                  <Text className="text-foreground ml-1">Back</Text>
-                </TouchableOpacity>
-              )}
-              <Text className="text-4xl font-bold mb-2 text-foreground">Create a New App</Text>
-              <Text className="text-lg text-muted-foreground">
-                {step === 0
-                  ? 'Fill in the details for your new app'
-                  : 'Describe what you want to build'}
-              </Text>
-            </View>
-
-            <View className="flex-1">{renderStep()}</View>
-
-            <View className="pb-8">
-              <View className="mb-4">
-                <Pagination
-                  data={[0, 1]}
-                  progress={progress}
-                  dotClassName="rounded-sm bg-muted"
-                  activeDotClassName="rounded-sm bg-primary"
-                />
-              </View>
-
+    <BottomSheetModal
+      ref={bottomSheetModalRef}
+      snapPoints={snapPoints}
+      onChange={handleSheetChanges}
+      enablePanDownToClose
+      enableDynamicSizing={false}
+      backdropComponent={renderBackdrop}
+      handleIndicatorStyle={{
+        backgroundColor: '#999',
+        width: 40,
+        height: 4,
+        marginTop: 10,
+      }}>
+      <BottomSheetView style={{ flex: 1 }} className="pt-4">
+        <View className="flex-1 px-6">
+          <View className="mb-6">
+            {step > 0 && (
               <TouchableOpacity
-                className={`py-4 rounded-full ${canContinue() ? 'bg-primary' : 'bg-muted'}`}
-                onPress={step === 0 ? handleNext : handleSubmit}
-                disabled={!canContinue() || isLoading}>
-                <Text
-                  className={`text-center font-semibold text-lg ${
-                    canContinue() ? 'text-primary-foreground' : 'text-muted-foreground'
-                  }`}>
-                  {step === 0 ? 'Continue' : isLoading ? 'Creating...' : 'Create Project'}
-                </Text>
+                onPress={() => {
+                  setStep(0);
+                  progress.value = 0;
+                }}
+                className="mb-4 flex-row items-center">
+                <ChevronLeft size={20} className="text-foreground" />
+                <Text className="text-foreground ml-1">Back</Text>
               </TouchableOpacity>
-            </View>
+            )}
+            <Text className="text-4xl font-bold mb-2 text-foreground">Create a New App</Text>
+            <Text className="text-lg text-muted-foreground">
+              {step === 0
+                ? 'Fill in the details for your new app'
+                : 'Describe what you want to build'}
+            </Text>
           </View>
-        </BottomSheetView>
-      </BottomSheetModal>
-    </>
+
+          <View className="flex-1">{renderStep()}</View>
+
+          <View className="pb-8">
+            <View className="mb-4">
+              <Pagination
+                data={[0, 1]}
+                progress={progress}
+                dotClassName="rounded-sm bg-muted"
+                activeDotClassName="rounded-sm bg-primary"
+              />
+            </View>
+
+            <TouchableOpacity
+              className={`py-4 rounded-full ${canContinue() ? 'bg-primary' : 'bg-muted'}`}
+              onPress={step === 0 ? handleNext : handleSubmit}
+              disabled={!canContinue() || isLoading}>
+              <Text
+                className={`text-center font-semibold text-lg ${
+                  canContinue() ? 'text-primary-foreground' : 'text-muted-foreground'
+                }`}>
+                {step === 0 ? 'Continue' : isLoading ? 'Creating...' : 'Create Project'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </BottomSheetView>
+    </BottomSheetModal>
   );
 }
