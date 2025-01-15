@@ -256,6 +256,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
                   placeholder="Enter your app name"
                   returnKeyType="next"
                   blurOnSubmit={false}
+                  bottomSheet
                   onSubmitEditing={() => {
                     descriptionInputRef.current?.focus();
                   }}
@@ -268,6 +269,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
                   defaultValue={formData.description}
                   onChangeText={handleDescriptionChange}
                   multiline
+                  bottomSheet
                   numberOfLines={4}
                   className="min-h-[120] py-3 px-4 bg-transparent text-lg"
                   textAlignVertical="top"
@@ -323,7 +325,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
         height: 4,
         marginTop: 10,
       }}>
-      <BottomSheetView style={{ flex: 1 }} className="pt-4">
+      <BottomSheetView style={{ flex: 1 }} className="pt-6">
         <View className="flex-1 px-6">
           <View className="mb-8">
             {step > 0 && (

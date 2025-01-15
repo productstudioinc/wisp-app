@@ -1,9 +1,49 @@
 import * as React from 'react';
-import { TextInput, type TextInputProps } from 'react-native';
+import {
+  TextInput,
+  type TextInputProps,
+  type NativeSyntheticEvent,
+  type TextInputFocusEventData,
+} from 'react-native';
+import { useBottomSheetInternal } from '@gorhom/bottom-sheet';
 import { cn } from '~/lib/utils';
 
-const Input = React.forwardRef<React.ElementRef<typeof TextInput>, TextInputProps>(
-  ({ className, placeholderClassName, ...props }, ref) => {
+interface InputProps extends TextInputProps {
+  bottomSheet?: boolean;
+}
+
+const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
+  ({ className, placeholderClassName, bottomSheet, onFocus, onBlur, ...props }, ref) => {
+    const bottomSheetInternal = bottomSheet ? useBottomSheetInternal() : null;
+
+    const handleOnFocus = React.useCallback(
+      (args: NativeSyntheticEvent<TextInputFocusEventData>) => {
+        if (bottomSheet) {
+          bottomSheetInternal!.shouldHandleKeyboardEvents.value = true;
+        }
+        onFocus?.(args);
+      },
+      [bottomSheet, bottomSheetInternal, onFocus],
+    );
+
+    const handleOnBlur = React.useCallback(
+      (args: NativeSyntheticEvent<TextInputFocusEventData>) => {
+        if (bottomSheet) {
+          bottomSheetInternal!.shouldHandleKeyboardEvents.value = false;
+        }
+        onBlur?.(args);
+      },
+      [bottomSheet, bottomSheetInternal, onBlur],
+    );
+
+    React.useEffect(() => {
+      if (bottomSheet) {
+        return () => {
+          bottomSheetInternal!.shouldHandleKeyboardEvents.value = false;
+        };
+      }
+    }, [bottomSheet, bottomSheetInternal]);
+
     return (
       <TextInput
         ref={ref}
@@ -13,6 +53,8 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, TextInputProp
           className,
         )}
         placeholderClassName={cn('text-muted-foreground', placeholderClassName)}
+        onFocus={handleOnFocus}
+        onBlur={handleOnBlur}
         {...props}
       />
     );
