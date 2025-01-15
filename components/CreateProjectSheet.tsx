@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState, useMemo, useEffect } from 'react';
-import { View, TouchableOpacity, Image } from 'react-native';
+import { View, TouchableOpacity, Image, ScrollView, Keyboard, TextInput } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Text } from '~/components/ui/text';
@@ -7,18 +7,12 @@ import { Pagination } from '~/components/pagination';
 import { supabase } from '~/supabase/client';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
-import Animated, {
-  SlideInRight,
-  SlideOutLeft,
-  withTiming,
-  useAnimatedStyle,
-  interpolate,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { SlideInRight, SlideOutLeft, useSharedValue } from 'react-native-reanimated';
 import * as ImagePicker from 'expo-image-picker';
 import { Upload } from '~/lib/icons/Upload';
 import { ChevronLeft } from '~/lib/icons/ChevronLeft';
 import { vars, useColorScheme } from 'nativewind';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 interface CreateProjectFormData {
   name: string;
@@ -28,14 +22,10 @@ interface CreateProjectFormData {
   isGeneratingIcon: boolean;
 }
 
-const PLACEHOLDER_IDEAS = [
+const EXAMPLE_IDEAS = [
   {
     name: 'Love Language Timer',
     description: "Make a love language tracker for me and Jake to see who's more romantic",
-  },
-  {
-    name: 'Couples Bucket List',
-    description: 'Make a couples bucket list generator for my girlfriend alyssa',
   },
   {
     name: 'Study Session Aesthetic',
@@ -51,55 +41,10 @@ const PLACEHOLDER_IDEAS = [
     description: 'Make an outfit randomizer for my capsule wardrobe',
   },
   {
-    name: 'Daily Cafeteria Menu Tracker',
-    description: 'Make a meal tracker that helps me not eat ramen every day',
-  },
-  {
     name: 'Gym Split Randomizer',
     description: 'Make a workout generator for my gym bro Mark that gives him crazy exercises',
   },
-  {
-    name: 'Dorm Room Chore Wheel',
-    description: 'Make a chore spinner for my roommates that decides who has to do dishes',
-  },
-  {
-    name: 'College Budget Visualizer',
-    description: 'Make a spending pie chart generator for my college expenses',
-  },
-  {
-    name: 'Daily Fit Check Counter',
-    description: 'Make a fit check streak tracker that gives me achievement badges',
-  },
-  {
-    name: 'Morning Routine Generator',
-    description: 'Make a morning routine randomizer that makes me actually wake up',
-  },
-  {
-    name: 'Student Excuse Generator',
-    description: "Make an excuse generator for when I'm late to class",
-  },
-  {
-    name: 'Dorm Room Snack Tracker',
-    description: "Make a snack inventory app that tells me when I'm eating too much ramen",
-  },
-  {
-    name: 'Library Study Spot Finder',
-    description: 'Make a study spot randomizer for my university library',
-  },
 ];
-
-const AnimatedPlaceholder = ({ text, opacity }: { text: string; opacity: number }) => {
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(opacity, { duration: 400 }),
-    position: 'absolute',
-  }));
-
-  return (
-    <Animated.Text style={animatedStyle} className="text-muted-foreground" numberOfLines={4}>
-      {text}
-    </Animated.Text>
-  );
-};
 
 interface CreateProjectSheetProps {
   onPresentRef?: (present: () => void) => void;
@@ -107,9 +52,9 @@ interface CreateProjectSheetProps {
 
 export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const descriptionInputRef = useRef<TextInput>(null);
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [formData, setFormData] = useState<CreateProjectFormData>({
     name: '',
     description: '',
@@ -118,33 +63,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     isGeneratingIcon: false,
   });
   const progress = useSharedValue(0);
-  const [showOldPlaceholder, setShowOldPlaceholder] = useState(true);
-  const [currentPlaceholder, setCurrentPlaceholder] = useState(PLACEHOLDER_IDEAS[0]);
-  const [nextPlaceholder, setNextPlaceholder] = useState(PLACEHOLDER_IDEAS[1]);
-  const fadeAnim = useSharedValue(0);
   const { colorScheme } = useColorScheme();
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fadeAnim.value = fadeAnim.value === 0 ? 1 : 0;
-
-      setTimeout(() => {
-        setPlaceholderIndex((current) => {
-          const nextIndex = (current + 1) % PLACEHOLDER_IDEAS.length;
-          if (fadeAnim.value === 1) {
-            setCurrentPlaceholder(PLACEHOLDER_IDEAS[nextIndex]);
-            setNextPlaceholder(PLACEHOLDER_IDEAS[(nextIndex + 1) % PLACEHOLDER_IDEAS.length]);
-          } else {
-            setNextPlaceholder(PLACEHOLDER_IDEAS[nextIndex]);
-            setCurrentPlaceholder(PLACEHOLDER_IDEAS[(nextIndex + 1) % PLACEHOLDER_IDEAS.length]);
-          }
-          return nextIndex;
-        });
-      }, 400);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const snapPoints = useMemo(() => ['80%'], []);
 
@@ -255,111 +174,123 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     setFormData((prev) => ({ ...prev, isGeneratingIcon: false }));
   };
 
-  const renderStep = () => {
-    if (step === 0) {
-      return (
-        <Animated.View
-          className="flex-1"
-          entering={SlideInRight.duration(300)}
-          exiting={SlideOutLeft.duration(300)}>
-          <View className="space-y-6">
-            <View className="items-center">
-              <View className="flex-row space-x-4">
-                <TouchableOpacity
-                  onPress={pickImage}
-                  className="w-24 h-24 rounded-2xl bg-muted justify-center items-center overflow-hidden border-2 border-dashed border-border">
-                  {formData.icon ? (
-                    <Image source={{ uri: formData.icon }} className="w-full h-full" />
-                  ) : (
-                    <View className="items-center space-y-2">
-                      <Upload size={24} className="text-muted-foreground" />
-                      <Text className="text-xs text-muted-foreground">Upload</Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-                {/* <TouchableOpacity
-                  onPress={handleGenerateIcon}
-                  disabled={formData.isGeneratingIcon}
-                  className="w-24 h-24 rounded-2xl bg-muted justify-center items-center overflow-hidden border-2 border-dashed border-border">
-                  <View className="items-center space-y-2">
-                    <Sparkles size={24} className="text-muted-foreground" />
-                    <Text className="text-xs text-muted-foreground">
-                      {formData.isGeneratingIcon ? 'Generating...' : 'Generate'}
-                    </Text>
-                  </View>
-                </TouchableOpacity> */}
-              </View>
-              <Text className="text-sm text-muted-foreground mt-2">Choose an app icon</Text>
-            </View>
-            <View>
-              <Text className="text-sm font-medium mb-1.5">App Name</Text>
-              <View className="relative">
-                <Input
-                  value={formData.name}
-                  onChangeText={(text) => setFormData({ ...formData, name: text })}
-                  className="bg-transparent"
-                />
-                {!formData.name && (
-                  <View className="absolute left-3 top-0 bottom-0 justify-center">
-                    <AnimatedPlaceholder
-                      text={currentPlaceholder.name}
-                      opacity={1 - fadeAnim.value}
-                    />
-                    <AnimatedPlaceholder text={nextPlaceholder.name} opacity={fadeAnim.value} />
-                  </View>
-                )}
-              </View>
-            </View>
-            <View>
-              <Text className="text-sm font-medium mb-1.5 pt-4">App Idea</Text>
-              <View className="relative">
-                <Input
-                  value={formData.description}
-                  onChangeText={(text) => setFormData({ ...formData, description: text })}
-                  multiline
-                  numberOfLines={4}
-                  className="min-h-[100] py-2 px-3 bg-transparent"
-                  textAlignVertical="top"
-                />
-                {!formData.description && (
-                  <View className="absolute left-3 top-2 right-3">
-                    <AnimatedPlaceholder
-                      text={currentPlaceholder.description}
-                      opacity={1 - fadeAnim.value}
-                    />
-                    <AnimatedPlaceholder
-                      text={nextPlaceholder.description}
-                      opacity={fadeAnim.value}
-                    />
-                  </View>
-                )}
-              </View>
-            </View>
-          </View>
-        </Animated.View>
-      );
-    }
+  const renderExampleIdeas = useMemo(
+    () => (
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row -mx-6 px-6">
+        {EXAMPLE_IDEAS.map((idea, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() =>
+              setFormData((prev) => ({
+                ...prev,
+                name: idea.name,
+                description: idea.description,
+              }))
+            }
+            className="mr-3 px-5 py-3 rounded-full bg-primary/10 border border-primary/20">
+            <Text className="text-base text-primary font-medium">{idea.name}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    ),
+    [],
+  );
 
-    return (
+  const handleNameChange = useCallback((text: string) => {
+    setFormData((prev) => ({ ...prev, name: text }));
+  }, []);
+
+  const handleDescriptionChange = useCallback((text: string) => {
+    setFormData((prev) => ({ ...prev, description: text }));
+  }, []);
+
+  const handleDescriptionSubmit = () => {
+    Keyboard.dismiss();
+  };
+
+  const renderFirstStep = useMemo(
+    () => (
       <Animated.View
         className="flex-1"
         entering={SlideInRight.duration(300)}
         exiting={SlideOutLeft.duration(300)}>
-        <View>
-          <Text className="text-sm font-medium mb-1.5">Project Prompt</Text>
-          <Input
-            placeholder="Describe what you want to build..."
-            value={formData.prompt}
-            onChangeText={(text) => setFormData({ ...formData, prompt: text })}
-            multiline
-            numberOfLines={6}
-            className="min-h-[200] py-2 px-3"
-            textAlignVertical="top"
-          />
-        </View>
+        <KeyboardAwareScrollView
+          bottomOffset={150} // Gives space for the continue button
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
+          <View className="space-y-8">
+            <View className="items-center">
+              <View className="flex-row space-x-4">
+                <TouchableOpacity
+                  onPress={pickImage}
+                  className="w-28 h-28 rounded-2xl bg-muted justify-center items-center overflow-hidden border-2 border-dashed border-border">
+                  {formData.icon ? (
+                    <Image source={{ uri: formData.icon }} className="w-full h-full" />
+                  ) : (
+                    <View className="items-center space-y-3">
+                      <Upload size={28} className="text-muted-foreground" />
+                      <Text className="text-base text-muted-foreground">Upload</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </View>
+              <Text className="text-base text-muted-foreground mt-3">Choose an app icon</Text>
+            </View>
+            <View>
+              <Text className="text-lg font-medium mb-2">App Name</Text>
+              <Input
+                value={formData.name}
+                onChangeText={handleNameChange}
+                className="bg-transparent text-lg py-3"
+                placeholder="Enter your app name"
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={() => {
+                  // Focus the description input when done with name
+                  descriptionInputRef.current?.focus();
+                }}
+              />
+            </View>
+            <View>
+              <Text className="text-lg font-medium mb-2 mt-2">App Idea</Text>
+              <Input
+                ref={descriptionInputRef}
+                value={formData.description}
+                onChangeText={handleDescriptionChange}
+                multiline
+                numberOfLines={4}
+                className="min-h-[120] py-3 px-4 bg-transparent text-lg"
+                textAlignVertical="top"
+                placeholder="Describe your app idea"
+                returnKeyType="done"
+                blurOnSubmit={true}
+                onSubmitEditing={handleDescriptionSubmit}
+              />
+              <View className="mt-6">
+                <Text className="text-base text-muted-foreground mb-3">
+                  Or try one of these examples:
+                </Text>
+                {renderExampleIdeas}
+              </View>
+            </View>
+          </View>
+        </KeyboardAwareScrollView>
       </Animated.View>
-    );
-  };
+    ),
+    [
+      formData.name,
+      formData.description,
+      handleNameChange,
+      handleDescriptionChange,
+      renderExampleIdeas,
+    ],
+  );
+
+  const renderStep = useCallback(() => {
+    if (step === 0) {
+      return renderFirstStep;
+    }
+  }, [step, renderFirstStep]);
 
   return (
     <BottomSheetModal
@@ -369,6 +300,9 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       enablePanDownToClose
       enableDynamicSizing={false}
       backdropComponent={renderBackdrop}
+      keyboardBehavior="interactive"
+      keyboardBlurBehavior="restore"
+      android_keyboardInputMode="adjustResize"
       backgroundStyle={{
         backgroundColor: colorScheme === 'dark' ? 'hsl(240 10% 3.9%)' : 'hsl(0 0% 100%)',
       }}
@@ -380,7 +314,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       }}>
       <BottomSheetView style={{ flex: 1 }} className="pt-4">
         <View className="flex-1 px-6">
-          <View className="mb-6">
+          <View className="mb-8">
             {step > 0 && (
               <TouchableOpacity
                 onPress={() => {
@@ -388,21 +322,16 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
                   progress.value = 0;
                 }}
                 className="mb-4 flex-row items-center">
-                <ChevronLeft size={20} className="text-foreground" />
-                <Text className="text-foreground ml-1">Back</Text>
+                <ChevronLeft size={24} className="text-foreground" />
+                <Text className="text-lg text-foreground ml-1">Back</Text>
               </TouchableOpacity>
             )}
-            <Text className="text-4xl font-bold mb-2 text-foreground">Create a New App</Text>
-            <Text className="text-lg text-muted-foreground">
-              {step === 0
-                ? 'Fill in the details for your new app'
-                : 'Describe what you want to build'}
-            </Text>
+            <Text className="text-4xl font-bold mb-3 text-foreground">Create a New App</Text>
           </View>
 
           <View className="flex-1">{renderStep()}</View>
 
-          <View className="pb-8">
+          <View className="pb-8 bg-background">
             <View className="mb-4">
               <Pagination
                 data={[0, 1]}
@@ -417,7 +346,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
               onPress={step === 0 ? handleNext : handleSubmit}
               disabled={!canContinue() || isLoading}>
               <Text
-                className={`text-center font-semibold text-lg ${
+                className={`text-center font-semibold text-xl ${
                   canContinue() ? 'text-primary-foreground' : 'text-muted-foreground'
                 }`}>
                 {step === 0 ? 'Continue' : isLoading ? 'Creating...' : 'Create Project'}

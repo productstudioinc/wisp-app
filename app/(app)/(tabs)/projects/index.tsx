@@ -64,27 +64,29 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
 
   return (
     <Animated.View entering={FadeInUp.delay(index * 100)} layout={Layout}>
-      <View className="bg-card/80 backdrop-blur-md rounded-2xl py-4 px-5 mb-3 border border-border">
+      <View className="bg-card/80 backdrop-blur-md rounded-2xl py-5 px-6 mb-4 border border-border">
         <View className="flex-row items-center">
-          <View className="w-12 h-12 rounded-xl bg-muted mr-4 overflow-hidden">
+          <View className="w-14 h-14 rounded-xl bg-muted mr-4 overflow-hidden">
             {project.icon ? (
               <Image source={{ uri: project.icon }} className="w-full h-full" />
             ) : (
               <View className="w-full h-full bg-secondary items-center justify-center">
-                <Text className="text-lg font-semibold text-muted-foreground">
+                <Text className="text-xl font-semibold text-muted-foreground">
                   {project.name.charAt(0)}
                 </Text>
               </View>
             )}
           </View>
 
-          <View className="flex-1 flex-row items-center justify-between min-h-[48px]">
+          <View className="flex-1 flex-row items-center justify-between min-h-[56px]">
             <View className="flex-1 mr-4">
-              <Text className="text-xl font-semibold text-foreground mb-1" numberOfLines={1}>
+              <Text className="text-2xl font-semibold text-foreground mb-2" numberOfLines={1}>
                 {project.name}
               </Text>
               <View className="flex-row items-center">
-                <View className={`w-2 h-2 rounded-full mr-2 ${getStatusColor(project.status)}`} />
+                <View
+                  className={`w-2.5 h-2.5 rounded-full mr-2 ${getStatusColor(project.status)}`}
+                />
                 <Text className="text-base text-muted-foreground" numberOfLines={1}>
                   {project.status}
                   {project.status_message && ` • ${project.status_message}`}
@@ -94,21 +96,21 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
 
             <View className="flex-row items-center">
               {project.created_at && (
-                <Text className="text-sm text-muted-foreground mr-4">
+                <Text className="text-base text-muted-foreground mr-4">
                   {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
                 </Text>
               )}
               <TouchableOpacity
                 onPress={handleShare}
-                className="p-2.5 rounded-full bg-secondary mr-2"
+                className="p-3 rounded-full bg-secondary mr-2.5"
                 disabled={!project.custom_domain}>
-                <Share2 size={18} className="text-foreground" />
+                <Share2 size={22} className="text-foreground" />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleOpen}
-                className="p-2.5 rounded-full bg-secondary"
+                className="p-3 rounded-full bg-secondary"
                 disabled={!project.custom_domain}>
-                <ExternalLink size={18} className="text-foreground" />
+                <ExternalLink size={22} className="text-foreground" />
               </TouchableOpacity>
             </View>
           </View>
@@ -120,9 +122,9 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
 
 const EmptyState = () => (
   <View className="flex-1 items-center justify-center py-12">
-    <Sparkles className="w-12 h-12 text-muted-foreground mb-4" />
-    <Text className="text-lg font-semibold text-foreground mb-2">No apps yet</Text>
-    <Text className="text-sm text-muted-foreground text-center px-6">
+    <Sparkles className="w-16 h-16 text-muted-foreground mb-6" />
+    <Text className="text-2xl font-semibold text-foreground mb-3">No apps yet</Text>
+    <Text className="text-lg text-muted-foreground text-center px-6">
       Create your first app to get started.{'\n'}It only takes a few seconds!
     </Text>
   </View>
@@ -190,7 +192,7 @@ export default function HomeScreen() {
     <Background>
       <SafeAreaView className="flex-1" edges={['top']}>
         <View className="flex-1 px-6">
-          <View className="py-4">
+          <View className="py-6">
             <Text className="text-4xl font-bold text-foreground">My Apps</Text>
           </View>
 
@@ -217,8 +219,8 @@ export default function HomeScreen() {
             presentCreateProject?.();
           }}
           size="icon"
-          className="absolute bottom-6 right-6 w-14 h-14 bg-primary rounded-full items-center justify-center shadow-lg">
-          <Plus className="text-primary-foreground" />
+          className="absolute bottom-8 right-6 w-16 h-16 bg-primary rounded-full items-center justify-center shadow-lg">
+          <Plus className="text-primary-foreground w-8 h-8" />
         </Button>
         <CreateProjectSheet onPresentRef={handlePresentRef} />
       </SafeAreaView>

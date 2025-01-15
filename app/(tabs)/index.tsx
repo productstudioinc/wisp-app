@@ -11,11 +11,12 @@ export default function HomeScreen() {
         <Auth />
 
         <TouchableOpacity
-          onPress={() => {
-            Superwall.shared.register('pressedPaywall').then(() => {
-              // presentLogCaffeine();
-            });
-          }}>
+        // onPress={() => {
+        //   Superwall.shared.register('pressedPaywall').then(() => {
+        //     // presentLogCaffeine();
+        //   });
+        // }}
+        >
           <Text>Log Caffeine</Text>
         </TouchableOpacity>
       </View>

@@ -16,12 +16,16 @@ export default function SettingsScreen() {
   return (
     <Background>
       <SafeAreaView className="flex-1" edges={['top']}>
-        <View className="flex-1 px-6 py-12">
-          <Text className="text-4xl font-bold mb-2 text-foreground">Settings</Text>
-          <Text className="text-lg text-muted-foreground mb-8">Manage your account</Text>
+        <View className="flex-1 px-6">
+          <View className="py-6">
+            <Text className="text-4xl font-bold mb-3 text-foreground">Settings</Text>
+            <Text className="text-xl text-muted-foreground">Manage your account</Text>
+          </View>
 
-          <TouchableOpacity className="bg-destructive py-4 rounded-full" onPress={handleSignOut}>
-            <Text className="text-center text-destructive-foreground font-semibold text-lg">
+          <TouchableOpacity
+            className="bg-destructive py-4 px-6 rounded-full mt-8"
+            onPress={handleSignOut}>
+            <Text className="text-center text-destructive-foreground font-semibold text-xl">
               Sign Out
             </Text>
           </TouchableOpacity>
