@@ -130,7 +130,7 @@ const EmptyState = () => (
   </View>
 );
 
-export default function ProjectsScreen() {
+export default function HomeScreen() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [presentCreateProject, setPresentCreateProject] = useState<(() => void) | null>(null);
 

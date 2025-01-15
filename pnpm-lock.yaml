@@ -170,6 +170,9 @@ importers:
       react-native-get-random-values:
         specifier: ^1.11.0
         version: 1.11.0(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))
+      react-native-keyboard-controller:
+        specifier: ^1.15.2
+        version: 1.15.2(react-native-reanimated@3.16.6(@babel/core@7.26.0)(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1)
       react-native-reanimated:
         specifier: ~3.16.6
         version: 3.16.6(@babel/core@7.26.0)(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1)
@@ -4513,6 +4516,13 @@ packages:
     peerDependencies:
       react: '>=18.2.0'
       react-native: '>=0.73.0'
+
+  react-native-keyboard-controller@1.15.2:
+    resolution: {integrity: sha512-ZN151OyMJ2GQkhebARY/5G9rXgSlNCKy+WjS6p4o7S+5ulb4nGzl6UkpEuT7/C6bHDeAjDupdrET9tyyTee3nA==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+      react-native-reanimated: '>=3.0.0'
 
   react-native-purchases@7.28.1:
     resolution: {integrity: sha512-5nd8s79dq+O9O+B0Gn9QNrKHn63kMNm5NQx1mnN8awBaDe95YpjqBaAgmVI/K66BSEDAkzTR0ep2BzUMawNmtQ==}
@@ -10364,6 +10374,13 @@ snapshots:
     dependencies:
       react: 18.3.1
       react-native: 0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1)
+
+  react-native-keyboard-controller@1.15.2(react-native-reanimated@3.16.6(@babel/core@7.26.0)(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-native: 0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1)
+      react-native-is-edge-to-edge: 1.1.6(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1)
+      react-native-reanimated: 3.16.6(@babel/core@7.26.0)(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1)
 
   react-native-purchases@7.28.1(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1):
     dependencies:
