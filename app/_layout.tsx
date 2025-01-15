@@ -8,6 +8,7 @@ import { PostHogProvider } from 'posthog-react-native';
 import * as React from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import '~/global.css';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import { NAV_THEME } from '~/lib/constants';
@@ -100,9 +101,11 @@ export default function RootLayout() {
       }}>
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-          <Stack screenOptions={{ headerShown: false }} />
-          <PortalHost />
+          <BottomSheetModalProvider>
+            <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+            <Stack screenOptions={{ headerShown: false }} />
+            <PortalHost />
+          </BottomSheetModalProvider>
         </GestureHandlerRootView>
       </ThemeProvider>
     </PostHogProvider>

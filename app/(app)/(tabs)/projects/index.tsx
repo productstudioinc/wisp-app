@@ -2,6 +2,7 @@ import { Link } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { CreateProjectSheet } from '~/components/CreateProjectSheet';
 import { supabase } from '~/supabase/client';
 
 type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
@@ -88,11 +89,10 @@ export default function HomeScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-1 px-6 py-12">
-        <Text className="text-4xl font-bold mb-6 text-foreground">Projects</Text>
-
-        <Link href="/projects/new">
-          <Text className="font-semibold text-center">Create New Project</Text>
-        </Link>
+        <View className="flex-row justify-between items-center mb-6">
+          <Text className="text-4xl font-bold text-foreground">Apps</Text>
+          <CreateProjectSheet />
+        </View>
 
         {projects.map((project) => (
           <View key={project.id} className="bg-card rounded-lg p-4 mb-4 border border-border">
