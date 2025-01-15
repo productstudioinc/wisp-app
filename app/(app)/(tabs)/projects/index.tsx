@@ -9,6 +9,7 @@ import { supabase } from '~/supabase/client';
 import { Sparkles } from '~/lib/icons/Sparkles';
 import { Plus } from '~/lib/icons/Plus';
 import { Button } from '~/components/ui/button';
+import { Background } from '~/components/ui/background';
 
 type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
 
@@ -164,39 +165,41 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
-      <View className="flex-1 px-4">
-        <View className="py-4">
-          <Text className="text-2xl font-semibold text-foreground">My Apps</Text>
+    <Background>
+      <SafeAreaView className="flex-1" edges={['top']}>
+        <View className="flex-1 px-6">
+          <View className="py-4">
+            <Text className="text-2xl font-semibold text-foreground">My Apps</Text>
+          </View>
+
+          {projects.length > 0 ? (
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                flexGrow: 0,
+              }}>
+              <View>
+                {projects.map((project, index) => (
+                  <ProjectCard key={project.id} project={project} index={index} />
+                ))}
+              </View>
+            </ScrollView>
+          ) : (
+            <EmptyState />
+          )}
         </View>
 
-        {projects.length > 0 ? (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              flexGrow: 0,
-            }}>
-            <View>
-              {projects.map((project, index) => (
-                <ProjectCard key={project.id} project={project} index={index} />
-              ))}
-            </View>
-          </ScrollView>
-        ) : (
-          <EmptyState />
-        )}
-      </View>
-
-      <Button
-        onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          presentCreateProject?.();
-        }}
-        size="icon"
-        className="absolute bottom-6 right-6 w-14 h-14 bg-primary rounded-full items-center justify-center shadow-lg">
-        <Plus className="text-primary-foreground" />
-      </Button>
-      <CreateProjectSheet onPresentRef={handlePresentRef} />
-    </SafeAreaView>
+        <Button
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            presentCreateProject?.();
+          }}
+          size="icon"
+          className="absolute bottom-6 right-6 w-14 h-14 bg-primary rounded-full items-center justify-center shadow-lg">
+          <Plus className="text-primary-foreground" />
+        </Button>
+        <CreateProjectSheet onPresentRef={handlePresentRef} />
+      </SafeAreaView>
+    </Background>
   );
 }

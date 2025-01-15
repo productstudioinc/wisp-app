@@ -23,8 +23,7 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          borderTopWidth: 1,
-          borderTopColor: '#e5e5e5',
+          borderTopWidth: 0,
           elevation: 0,
           height: Platform.OS === 'ios' ? 90 : 70,
           paddingBottom: Platform.OS === 'ios' ? 30 : 10,
