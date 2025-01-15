@@ -250,14 +250,13 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
               <View>
                 <Text className="text-lg font-medium mb-2">App Name</Text>
                 <Input
-                  value={formData.name}
+                  defaultValue={formData.name}
                   onChangeText={handleNameChange}
                   className="bg-transparent text-lg py-3"
                   placeholder="Enter your app name"
                   returnKeyType="next"
                   blurOnSubmit={false}
                   onSubmitEditing={() => {
-                    // Focus the description input when done with name
                     descriptionInputRef.current?.focus();
                   }}
                 />
@@ -266,7 +265,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
                 <Text className="text-lg font-medium mb-2 mt-2">App Idea</Text>
                 <Input
                   ref={descriptionInputRef}
-                  value={formData.description}
+                  defaultValue={formData.description}
                   onChangeText={handleDescriptionChange}
                   multiline
                   numberOfLines={4}
