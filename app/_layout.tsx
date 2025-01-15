@@ -1,20 +1,17 @@
-import '~/global.css';
-
+import { supabase } from '@/supabase/client';
 import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
 import { PortalHost } from '@rn-primitives/portal';
 import Superwall from '@superwall/react-native-superwall';
-import { Redirect, Stack, useRootNavigationState, useRouter, useSegments } from 'expo-router';
+import { Stack, useRootNavigationState, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { PostHogProvider } from 'posthog-react-native';
 import * as React from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { ThemeToggle } from '~/components/ThemeToggle';
+import '~/global.css';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { supabase } from '@/supabase/client';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -46,7 +43,7 @@ function useProtectedRoute(user: any) {
       router.replace('/(auth)/welcome');
     } else if (user && inAuthGroup) {
       // If signed in and in auth group, redirect to app
-      router.replace('/(app)/(tabs)');
+      router.replace('/(app)/(tabs)/projects');
     }
   }, [user, segments, navigationState?.key]);
 }

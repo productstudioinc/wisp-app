@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -88,6 +89,10 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-1 px-6 py-12">
         <Text className="text-4xl font-bold mb-6 text-foreground">Projects</Text>
+
+        <Link href="/projects/new">
+          <Text className="font-semibold text-center">Create New Project</Text>
+        </Link>
 
         {projects.map((project) => (
           <View key={project.id} className="bg-card rounded-lg p-4 mb-4 border border-border">

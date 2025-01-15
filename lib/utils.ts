@@ -1,13 +1,15 @@
 import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 import Constants from 'expo-constants';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export const generateAPIUrl = (relativePath: string) => {
-  const origin = Constants.experienceUrl.replace('exp://', 'http://');
+  const origin = Constants.expoConfig?.extra?.router?.origin
+    ? Constants.expoConfig?.extra?.router?.origin.replace('exp://', 'http://')
+    : 'http://localhost:8081';
 
   const path = relativePath.startsWith('/') ? relativePath : `/${relativePath}`;
 

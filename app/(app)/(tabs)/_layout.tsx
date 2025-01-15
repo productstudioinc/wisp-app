@@ -1,9 +1,9 @@
-import { Tabs } from 'expo-router';
-import { Platform } from 'react-native';
-import React from 'react';
-import { IconHome, IconHomeFilled } from '@tabler/icons-react-native';
-import { cssInterop } from 'nativewind';
 import { FontAwesome6 } from '@expo/vector-icons';
+import { IconHome, IconHomeFilled } from '@tabler/icons-react-native';
+import { Tabs } from 'expo-router';
+import { cssInterop } from 'nativewind';
+import React from 'react';
+import { Platform } from 'react-native';
 
 cssInterop(IconHome, {
   className: {
@@ -36,7 +36,7 @@ export default function TabsLayout() {
         },
       }}>
       <Tabs.Screen
-        name="index"
+        name="projects/index"
         options={{
           title: 'Home',
           tabBarShowLabel: false,
