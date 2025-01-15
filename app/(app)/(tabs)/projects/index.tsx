@@ -80,12 +80,12 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
 
           <View className="flex-1 flex-row items-center justify-between min-h-[48px]">
             <View className="flex-1 mr-4">
-              <Text className="text-lg font-semibold text-foreground mb-1" numberOfLines={1}>
+              <Text className="text-xl font-semibold text-foreground mb-1" numberOfLines={1}>
                 {project.name}
               </Text>
               <View className="flex-row items-center">
                 <View className={`w-2 h-2 rounded-full mr-2 ${getStatusColor(project.status)}`} />
-                <Text className="text-sm text-muted-foreground" numberOfLines={1}>
+                <Text className="text-base text-muted-foreground" numberOfLines={1}>
                   {project.status}
                   {project.status_message && ` • ${project.status_message}`}
                 </Text>
@@ -191,7 +191,7 @@ export default function HomeScreen() {
       <SafeAreaView className="flex-1" edges={['top']}>
         <View className="flex-1 px-6">
           <View className="py-4">
-            <Text className="text-2xl font-semibold text-foreground">My Apps</Text>
+            <Text className="text-4xl font-bold text-foreground">My Apps</Text>
           </View>
 
           {projects.length > 0 ? (

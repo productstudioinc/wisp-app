@@ -18,6 +18,7 @@ import Animated, {
 import * as ImagePicker from 'expo-image-picker';
 import { Upload } from '~/lib/icons/Upload';
 import { ChevronLeft } from '~/lib/icons/ChevronLeft';
+import { vars, useColorScheme } from 'nativewind';
 
 interface CreateProjectFormData {
   name: string;
@@ -121,6 +122,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(PLACEHOLDER_IDEAS[0]);
   const [nextPlaceholder, setNextPlaceholder] = useState(PLACEHOLDER_IDEAS[1]);
   const fadeAnim = useSharedValue(0);
+  const { colorScheme } = useColorScheme();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -164,7 +166,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
 
   const renderBackdrop = useCallback(
     (props: any) => (
-      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />
+      <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} opacity={0.5} />
     ),
     [],
   );
@@ -367,8 +369,11 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       enablePanDownToClose
       enableDynamicSizing={false}
       backdropComponent={renderBackdrop}
+      backgroundStyle={{
+        backgroundColor: colorScheme === 'dark' ? 'hsl(240 10% 3.9%)' : 'hsl(0 0% 100%)',
+      }}
       handleIndicatorStyle={{
-        backgroundColor: '#999',
+        backgroundColor: colorScheme === 'dark' ? 'hsl(240 5% 64.9%)' : 'hsl(240 3.8% 46.1%)',
         width: 40,
         height: 4,
         marginTop: 10,
@@ -402,8 +407,8 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
               <Pagination
                 data={[0, 1]}
                 progress={progress}
-                dotClassName="rounded-sm bg-muted"
-                activeDotClassName="rounded-sm bg-primary"
+                dotClassName="rounded-full bg-muted mx-1"
+                activeDotClassName="rounded-full bg-primary"
               />
             </View>
 
