@@ -1,5 +1,14 @@
 import React, { useCallback, useRef, useState, useMemo, useEffect } from 'react';
-import { View, TouchableOpacity, Image, ScrollView, Keyboard, TextInput } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  Keyboard,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Text } from '~/components/ui/text';
@@ -12,7 +21,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { Upload } from '~/lib/icons/Upload';
 import { ChevronLeft } from '~/lib/icons/ChevronLeft';
 import { vars, useColorScheme } from 'nativewind';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 interface CreateProjectFormData {
   name: string;
@@ -214,67 +222,71 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
         className="flex-1"
         entering={SlideInRight.duration(300)}
         exiting={SlideOutLeft.duration(300)}>
-        <KeyboardAwareScrollView
-          bottomOffset={150} // Gives space for the continue button
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
-          <View className="space-y-8">
-            <View className="items-center">
-              <View className="flex-row space-x-4">
-                <TouchableOpacity
-                  onPress={pickImage}
-                  className="w-28 h-28 rounded-2xl bg-muted justify-center items-center overflow-hidden border-2 border-dashed border-border">
-                  {formData.icon ? (
-                    <Image source={{ uri: formData.icon }} className="w-full h-full" />
-                  ) : (
-                    <View className="items-center space-y-3">
-                      <Upload size={28} className="text-muted-foreground" />
-                      <Text className="text-base text-muted-foreground">Upload</Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          className="flex-1">
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: 150 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}>
+            <View className="space-y-8">
+              <View className="items-center">
+                <View className="flex-row space-x-4">
+                  <TouchableOpacity
+                    onPress={pickImage}
+                    className="w-28 h-28 rounded-2xl bg-muted justify-center items-center overflow-hidden border-2 border-dashed border-border">
+                    {formData.icon ? (
+                      <Image source={{ uri: formData.icon }} className="w-full h-full" />
+                    ) : (
+                      <View className="items-center space-y-3">
+                        <Upload size={28} className="text-muted-foreground" />
+                        <Text className="text-base text-muted-foreground">Upload</Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                </View>
+                <Text className="text-base text-muted-foreground mt-3">Choose an app icon</Text>
               </View>
-              <Text className="text-base text-muted-foreground mt-3">Choose an app icon</Text>
-            </View>
-            <View>
-              <Text className="text-lg font-medium mb-2">App Name</Text>
-              <Input
-                value={formData.name}
-                onChangeText={handleNameChange}
-                className="bg-transparent text-lg py-3"
-                placeholder="Enter your app name"
-                returnKeyType="next"
-                blurOnSubmit={false}
-                onSubmitEditing={() => {
-                  // Focus the description input when done with name
-                  descriptionInputRef.current?.focus();
-                }}
-              />
-            </View>
-            <View>
-              <Text className="text-lg font-medium mb-2 mt-2">App Idea</Text>
-              <Input
-                ref={descriptionInputRef}
-                value={formData.description}
-                onChangeText={handleDescriptionChange}
-                multiline
-                numberOfLines={4}
-                className="min-h-[120] py-3 px-4 bg-transparent text-lg"
-                textAlignVertical="top"
-                placeholder="Describe your app idea"
-                returnKeyType="done"
-                blurOnSubmit={true}
-                onSubmitEditing={handleDescriptionSubmit}
-              />
-              <View className="mt-6">
-                <Text className="text-base text-muted-foreground mb-3">
-                  Or try one of these examples:
-                </Text>
-                {renderExampleIdeas}
+              <View>
+                <Text className="text-lg font-medium mb-2">App Name</Text>
+                <Input
+                  value={formData.name}
+                  onChangeText={handleNameChange}
+                  className="bg-transparent text-lg py-3"
+                  placeholder="Enter your app name"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                  onSubmitEditing={() => {
+                    // Focus the description input when done with name
+                    descriptionInputRef.current?.focus();
+                  }}
+                />
+              </View>
+              <View>
+                <Text className="text-lg font-medium mb-2 mt-2">App Idea</Text>
+                <Input
+                  ref={descriptionInputRef}
+                  value={formData.description}
+                  onChangeText={handleDescriptionChange}
+                  multiline
+                  numberOfLines={4}
+                  className="min-h-[120] py-3 px-4 bg-transparent text-lg"
+                  textAlignVertical="top"
+                  placeholder="Describe your app idea"
+                  returnKeyType="done"
+                  blurOnSubmit={true}
+                  onSubmitEditing={handleDescriptionSubmit}
+                />
+                <View className="mt-6">
+                  <Text className="text-base text-muted-foreground mb-3">
+                    Or try one of these examples:
+                  </Text>
+                  {renderExampleIdeas}
+                </View>
               </View>
             </View>
-          </View>
-        </KeyboardAwareScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </Animated.View>
     ),
     [
