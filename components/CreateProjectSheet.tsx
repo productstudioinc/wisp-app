@@ -1,18 +1,23 @@
-import React, { useCallback, useRef, useState, useMemo } from 'react';
+import React, { useCallback, useRef, useState, useMemo, useEffect } from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Text } from '~/components/ui/text';
-import { useSharedValue } from 'react-native-reanimated';
 import { Pagination } from '~/components/pagination';
 import { supabase } from '~/supabase/client';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
-import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
+import Animated, {
+  SlideInRight,
+  SlideOutLeft,
+  withTiming,
+  useAnimatedStyle,
+  interpolate,
+  useSharedValue,
+} from 'react-native-reanimated';
 import * as ImagePicker from 'expo-image-picker';
 import { Upload } from '~/lib/icons/Upload';
 import { ChevronLeft } from '~/lib/icons/ChevronLeft';
-import { Sparkles } from '~/lib/icons/Sparkles';
 
 interface CreateProjectFormData {
   name: string;
@@ -22,10 +27,84 @@ interface CreateProjectFormData {
   isGeneratingIcon: boolean;
 }
 
+const PLACEHOLDER_IDEAS = [
+  {
+    name: 'Love Language Timer',
+    description: "Make a love language tracker for me and Jake to see who's more romantic",
+  },
+  {
+    name: 'Couples Bucket List',
+    description: 'Make a couples bucket list generator for my girlfriend alyssa',
+  },
+  {
+    name: 'Study Session Aesthetic',
+    description: 'Make me a kawaii study timer with lofi aesthetics',
+  },
+  {
+    name: 'Situationship Calculator',
+    description:
+      "Make a situationship calculator that tells me if we're dating based on how many times we've hung out",
+  },
+  {
+    name: 'Outfit Decision Maker',
+    description: 'Make an outfit randomizer for my capsule wardrobe',
+  },
+  {
+    name: 'Daily Cafeteria Menu Tracker',
+    description: 'Make a meal tracker that helps me not eat ramen every day',
+  },
+  {
+    name: 'Gym Split Randomizer',
+    description: 'Make a workout generator for my gym bro Mark that gives him crazy exercises',
+  },
+  {
+    name: 'Dorm Room Chore Wheel',
+    description: 'Make a chore spinner for my roommates that decides who has to do dishes',
+  },
+  {
+    name: 'College Budget Visualizer',
+    description: 'Make a spending pie chart generator for my college expenses',
+  },
+  {
+    name: 'Daily Fit Check Counter',
+    description: 'Make a fit check streak tracker that gives me achievement badges',
+  },
+  {
+    name: 'Morning Routine Generator',
+    description: 'Make a morning routine randomizer that makes me actually wake up',
+  },
+  {
+    name: 'Student Excuse Generator',
+    description: "Make an excuse generator for when I'm late to class",
+  },
+  {
+    name: 'Dorm Room Snack Tracker',
+    description: "Make a snack inventory app that tells me when I'm eating too much ramen",
+  },
+  {
+    name: 'Library Study Spot Finder',
+    description: 'Make a study spot randomizer for my university library',
+  },
+];
+
+const AnimatedPlaceholder = ({ text, opacity }: { text: string; opacity: number }) => {
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(opacity, { duration: 400 }),
+    position: 'absolute',
+  }));
+
+  return (
+    <Animated.Text style={animatedStyle} className="text-muted-foreground" numberOfLines={4}>
+      {text}
+    </Animated.Text>
+  );
+};
+
 export function CreateProjectSheet() {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [formData, setFormData] = useState<CreateProjectFormData>({
     name: '',
     description: '',
@@ -34,6 +113,32 @@ export function CreateProjectSheet() {
     isGeneratingIcon: false,
   });
   const progress = useSharedValue(0);
+  const [showOldPlaceholder, setShowOldPlaceholder] = useState(true);
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(PLACEHOLDER_IDEAS[0]);
+  const [nextPlaceholder, setNextPlaceholder] = useState(PLACEHOLDER_IDEAS[1]);
+  const fadeAnim = useSharedValue(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fadeAnim.value = fadeAnim.value === 0 ? 1 : 0;
+
+      setTimeout(() => {
+        setPlaceholderIndex((current) => {
+          const nextIndex = (current + 1) % PLACEHOLDER_IDEAS.length;
+          if (fadeAnim.value === 1) {
+            setCurrentPlaceholder(PLACEHOLDER_IDEAS[nextIndex]);
+            setNextPlaceholder(PLACEHOLDER_IDEAS[(nextIndex + 1) % PLACEHOLDER_IDEAS.length]);
+          } else {
+            setNextPlaceholder(PLACEHOLDER_IDEAS[nextIndex]);
+            setCurrentPlaceholder(PLACEHOLDER_IDEAS[(nextIndex + 1) % PLACEHOLDER_IDEAS.length]);
+          }
+          return nextIndex;
+        });
+      }, 400);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const snapPoints = useMemo(() => ['80%'], []);
 
@@ -176,23 +281,47 @@ export function CreateProjectSheet() {
             </View>
             <View>
               <Text className="text-sm font-medium mb-1.5">App Name</Text>
-              <Input
-                placeholder="My Awesome App"
-                value={formData.name}
-                onChangeText={(text) => setFormData({ ...formData, name: text })}
-              />
+              <View className="relative">
+                <Input
+                  value={formData.name}
+                  onChangeText={(text) => setFormData({ ...formData, name: text })}
+                  className="bg-transparent"
+                />
+                {!formData.name && (
+                  <View className="absolute left-3 top-0 bottom-0 justify-center">
+                    <AnimatedPlaceholder
+                      text={currentPlaceholder.name}
+                      opacity={1 - fadeAnim.value}
+                    />
+                    <AnimatedPlaceholder text={nextPlaceholder.name} opacity={fadeAnim.value} />
+                  </View>
+                )}
+              </View>
             </View>
             <View>
-              <Text className="text-sm font-medium mb-1.5">App Description</Text>
-              <Input
-                placeholder="A brief description of your app"
-                value={formData.description}
-                onChangeText={(text) => setFormData({ ...formData, description: text })}
-                multiline
-                numberOfLines={4}
-                className="min-h-[100] py-2 px-3"
-                textAlignVertical="top"
-              />
+              <Text className="text-sm font-medium mb-1.5 pt-4">App Idea</Text>
+              <View className="relative">
+                <Input
+                  value={formData.description}
+                  onChangeText={(text) => setFormData({ ...formData, description: text })}
+                  multiline
+                  numberOfLines={4}
+                  className="min-h-[100] py-2 px-3 bg-transparent"
+                  textAlignVertical="top"
+                />
+                {!formData.description && (
+                  <View className="absolute left-3 top-2 right-3">
+                    <AnimatedPlaceholder
+                      text={currentPlaceholder.description}
+                      opacity={1 - fadeAnim.value}
+                    />
+                    <AnimatedPlaceholder
+                      text={nextPlaceholder.description}
+                      opacity={fadeAnim.value}
+                    />
+                  </View>
+                )}
+              </View>
             </View>
           </View>
         </Animated.View>
