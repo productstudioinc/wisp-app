@@ -10,7 +10,6 @@ import { Plus } from '~/lib/icons/Plus';
 import { Button } from '~/components/ui/button';
 import { Background } from '~/components/ui/background';
 import { formatDistanceToNow } from 'date-fns';
-import * as Sharing from 'expo-sharing';
 import { Share2 } from '~/lib/icons/Share2';
 import { ExternalLink } from '~/lib/icons/ExternalLink';
 import { shareUrl, openUrl } from '~/lib/utils';
@@ -52,13 +51,17 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
   const handleShare = () => shareUrl(project.custom_domain, `Share ${project.name}`);
   const handleOpen = () => openUrl(project.custom_domain);
 
+  const faviconUrl = project.custom_domain ? `https://${project.custom_domain}/favicon.png` : null;
+
   return (
     <Animated.View entering={FadeInUp.delay(index * 100)} layout={Layout}>
       <View className="bg-card/80 backdrop-blur-md rounded-2xl py-4 px-5 mb-3 border border-border">
         <View className="flex-row items-start">
           <View className="w-12 h-12 rounded-xl bg-muted mr-4 overflow-hidden">
-            {project.icon ? (
-              <Image source={{ uri: project.icon }} className="w-full h-full" />
+            {faviconUrl ? (
+              <>
+                <Image source={{ uri: faviconUrl }} className="w-full h-full" />
+              </>
             ) : (
               <View className="w-full h-full bg-secondary items-center justify-center">
                 <Text className="text-lg font-semibold text-muted-foreground">
