@@ -14,6 +14,7 @@ import FirstStep from './create-project/FirstStep';
 import SecondStep from './create-project/SecondStep';
 import StepFooter from './create-project/StepFooter';
 import LoadingStep from './create-project/LoadingStep';
+import * as Notifications from 'expo-notifications';
 
 interface Question {
   id: string;
@@ -276,6 +277,22 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       }
 
       bottomSheetModalRef.current?.dismiss();
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+          shouldPlaySound: false,
+          shouldSetBadge: false,
+        }),
+      });
+
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Project created',
+          body: 'We will send you a notification when your project is ready',
+        },
+        trigger: null,
+      });
+
       resetForm();
     } catch (error) {
       console.error('Error creating project:', error);

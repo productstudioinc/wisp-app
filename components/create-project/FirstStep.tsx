@@ -114,7 +114,12 @@ export default function FirstStep({
                   onPress={onPickImage}
                   className="w-28 h-28 rounded-2xl bg-muted justify-center items-center overflow-hidden border-2 border-dashed border-border">
                   {icon ? (
-                    <Image source={{ uri: icon }} className="w-full h-full" />
+                    <Image
+                      source={{ uri: icon }}
+                      style={{ width: '100%', height: '100%' }}
+                      contentFit="cover"
+                      transition={200}
+                    />
                   ) : (
                     <View className="items-center space-y-3">
                       <Upload size={28} className="text-muted-foreground" />
