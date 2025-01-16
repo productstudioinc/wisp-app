@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Dimensions,
 } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -25,8 +26,10 @@ import Animated, {
   withTiming,
   withDelay,
   useAnimatedStyle,
+  withSpring,
   Easing,
 } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
 import { Upload } from '~/lib/icons/Upload';
 import { ChevronLeft } from '~/lib/icons/ChevronLeft';
@@ -51,6 +54,8 @@ interface CreateProjectFormData {
   icon: string | null;
   isGeneratingIcon: boolean;
   questions: Question[];
+  imagesDescription: string[];
+  imageSuggestions: string;
 }
 
 const INITIAL_QUESTIONS = [
@@ -95,9 +100,142 @@ const EXAMPLE_IDEAS = [
   },
 ];
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const CARD_WIDTH = SCREEN_WIDTH - 48; // 24px padding on each side
+const MAX_ROTATION = 7;
+
 interface CreateProjectSheetProps {
   onPresentRef?: (present: () => void) => void;
 }
+
+const ImageCard = ({
+  uri,
+  index,
+  totalCards,
+  onSwipe,
+}: {
+  uri: string;
+  index: number;
+  totalCards: number;
+  onSwipe: (direction: 'left' | 'right') => void;
+}) => {
+  const x = useSharedValue(0);
+  const y = useSharedValue(0);
+  const rotation = useSharedValue((Math.random() * 2 - 1) * 3);
+  const scale = useSharedValue(1 - index * 0.05);
+  const [isSwiped, setIsSwiped] = useState(false);
+
+  const gesture = Gesture.Pan()
+    .onUpdate((e) => {
+      if (isSwiped) return;
+      x.value = e.translationX;
+      y.value = e.translationY;
+    })
+    .onEnd((e) => {
+      if (isSwiped) return;
+      if (Math.abs(e.velocityX) > 500) {
+        setIsSwiped(true);
+        const direction = e.velocityX > 0 ? 'right' : 'left';
+        x.value = withSpring(Math.sign(e.velocityX) * SCREEN_WIDTH * 1.5, {}, () => {
+          onSwipe(direction);
+        });
+        y.value = withSpring(0);
+      } else {
+        x.value = withSpring(0);
+        y.value = withSpring(0);
+      }
+    });
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: x.value },
+        { translateY: y.value },
+        { rotate: `${rotation.value}deg` },
+        { scale: scale.value },
+      ],
+      zIndex: totalCards - index,
+    };
+  });
+
+  useEffect(() => {
+    if (!isSwiped) {
+      x.value = withSpring(0);
+      y.value = withSpring(0);
+      rotation.value = (Math.random() * 2 - 1) * 3;
+      scale.value = 1 - index * 0.05;
+    }
+  }, [index]);
+
+  if (isSwiped) return null;
+
+  return (
+    <GestureDetector gesture={gesture}>
+      <Animated.View
+        className="absolute"
+        style={[
+          {
+            width: CARD_WIDTH,
+            height: CARD_WIDTH,
+            backgroundColor: 'white',
+            borderRadius: 24,
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+          },
+          animatedStyle,
+        ]}>
+        <Image
+          source={{ uri }}
+          style={{ width: '100%', height: '100%' }}
+          className="rounded-2xl"
+          contentFit="cover"
+        />
+      </Animated.View>
+    </GestureDetector>
+  );
+};
+
+const ImageStack = ({
+  images,
+  onReorder,
+}: {
+  images: string[];
+  onReorder: (newImages: string[]) => void;
+}) => {
+  const handleSwipe = (index: number, direction: 'left' | 'right') => {
+    const newImages = [...images];
+    const [removed] = newImages.splice(index, 1);
+    newImages.push(removed);
+    onReorder(newImages);
+  };
+
+  return (
+    <View className="h-[400] items-center justify-center">
+      {images.map((uri, index) => (
+        <ImageCard
+          key={uri}
+          uri={uri}
+          index={index}
+          totalCards={images.length}
+          onSwipe={(direction) => handleSwipe(index, direction)}
+        />
+      ))}
+      {images.length === 0 && (
+        <View className="w-full h-[400] rounded-2xl bg-muted justify-center items-center border-2 border-dashed border-border">
+          <Upload size={32} className="text-muted-foreground" />
+          <Text className="text-base text-muted-foreground mt-4">Add reference images</Text>
+          <Text className="text-sm text-muted-foreground mt-1">Swipe to reorder</Text>
+        </View>
+      )}
+    </View>
+  );
+};
 
 export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -112,6 +250,8 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     icon: null,
     isGeneratingIcon: false,
     questions: INITIAL_QUESTIONS,
+    imagesDescription: [],
+    imageSuggestions: '',
   });
   const progress = useSharedValue(0);
   const { colorScheme } = useColorScheme();
@@ -292,6 +432,8 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       icon: null,
       isGeneratingIcon: false,
       questions: INITIAL_QUESTIONS,
+      imagesDescription: [],
+      imageSuggestions: '',
     });
   };
 
@@ -420,6 +562,30 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
         },
       ],
     );
+  };
+
+  const pickMultipleImages = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: 'images',
+      allowsMultipleSelection: true,
+      selectionLimit: 10,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const newImages = result.assets.map((asset) => asset.uri);
+      setFormData((prev) => ({
+        ...prev,
+        imagesDescription: [...prev.imagesDescription, ...newImages].slice(0, 5),
+      }));
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      imagesDescription: prev.imagesDescription.filter((_, i) => i !== index),
+    }));
   };
 
   const renderFirstStep = useMemo(
@@ -570,12 +736,31 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
                   </View>
                 ))}
               </View>
+
+              <View className="space-y-4">
+                <Text className="text-lg font-medium">Reference Images</Text>
+                <Text className="text-base text-muted-foreground">
+                  Add images to help describe your app's style
+                </Text>
+
+                <ImageStack
+                  images={formData.imagesDescription}
+                  onReorder={(newImages) =>
+                    setFormData((prev) => ({ ...prev, imagesDescription: newImages }))
+                  }
+                />
+
+                <Button onPress={pickMultipleImages} variant="outline" className="w-full h-12">
+                  <Upload size={20} className="mr-2 text-foreground" />
+                  <Text>Add Images</Text>
+                </Button>
+              </View>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </Animated.View>
     ),
-    [formData.questions],
+    [formData.questions, formData.imagesDescription],
   );
 
   const renderStep = useCallback(() => {
