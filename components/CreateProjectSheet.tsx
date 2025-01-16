@@ -328,17 +328,6 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       <BottomSheetView style={{ flex: 1 }} className="pt-6">
         <View className="flex-1 px-6">
           <View className="mb-8">
-            {step > 0 && (
-              <TouchableOpacity
-                onPress={() => {
-                  setStep(0);
-                  progress.value = 0;
-                }}
-                className="mb-4 flex-row items-center">
-                <ChevronLeft size={24} className="text-foreground" />
-                <Text className="text-lg text-foreground ml-1">Back</Text>
-              </TouchableOpacity>
-            )}
             <Text className="text-4xl font-bold mb-3 text-foreground">Create a New App</Text>
           </View>
 
@@ -354,17 +343,28 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
               />
             </View>
 
-            <TouchableOpacity
-              className={`py-4 rounded-full ${canContinue() ? 'bg-primary' : 'bg-muted'}`}
-              onPress={step === 0 ? handleNext : handleSubmit}
-              disabled={!canContinue() || isLoading}>
-              <Text
-                className={`text-center font-semibold text-xl ${
-                  canContinue() ? 'text-primary-foreground' : 'text-muted-foreground'
-                }`}>
-                {step === 0 ? 'Continue' : isLoading ? 'Creating...' : 'Create Project'}
-              </Text>
-            </TouchableOpacity>
+            <View className="flex-row">
+              {step > 0 && (
+                <Button
+                  onPress={() => setStep(0)}
+                  className="rounded-full mr-2 h-10 w-12"
+                  variant="ghost">
+                  <ChevronLeft size={24} className="text-primary" />
+                </Button>
+              )}
+              <Button
+                className={`flex-1 rounded-full ${canContinue() ? 'bg-primary' : 'bg-muted'}`}
+                size="lg"
+                onPress={step === 0 ? handleNext : handleSubmit}
+                disabled={!canContinue() || isLoading}>
+                <Text
+                  className={`text-center font-semibold ${
+                    canContinue() ? 'text-primary-foreground' : 'text-muted-foreground'
+                  }`}>
+                  {step === 0 ? 'Continue' : isLoading ? 'Creating...' : 'Create Project'}
+                </Text>
+              </Button>
+            </View>
           </View>
         </View>
       </BottomSheetView>
