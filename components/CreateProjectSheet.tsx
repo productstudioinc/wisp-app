@@ -28,6 +28,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   Easing,
+  runOnJS,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
@@ -122,27 +123,39 @@ const ImageCard = ({
   const x = useSharedValue(0);
   const y = useSharedValue(0);
   const rotation = useSharedValue((Math.random() * 2 - 1) * 3);
-  const scale = useSharedValue(1 - index * 0.05);
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
   const [isSwiped, setIsSwiped] = useState(false);
+
+  // Calculate initial positions for the stack effect
+  const initialY = -index * 2; // Slight vertical offset for each card
+  const initialScale = 1 - index * 0.05; // Slightly smaller scale for each card behind
 
   const gesture = Gesture.Pan()
     .onUpdate((e) => {
       if (isSwiped) return;
       x.value = e.translationX;
-      y.value = e.translationY;
+      y.value = e.translationY + initialY;
+      // Calculate rotation based on drag distance
+      rotation.value = (e.translationX / SCREEN_WIDTH) * 15;
     })
     .onEnd((e) => {
       if (isSwiped) return;
       if (Math.abs(e.velocityX) > 500) {
-        setIsSwiped(true);
+        runOnJS(setIsSwiped)(true);
         const direction = e.velocityX > 0 ? 'right' : 'left';
-        x.value = withSpring(Math.sign(e.velocityX) * SCREEN_WIDTH * 1.5, {}, () => {
-          onSwipe(direction);
+        x.value = withSpring(Math.sign(e.velocityX) * SCREEN_WIDTH * 1.5, {
+          velocity: e.velocityX,
+          damping: 15,
         });
-        y.value = withSpring(0);
+        y.value = withSpring(0, { velocity: e.velocityY });
+        opacity.value = withTiming(0, { duration: 300 }, () => {
+          runOnJS(onSwipe)(direction);
+        });
       } else {
-        x.value = withSpring(0);
-        y.value = withSpring(0);
+        x.value = withSpring(0, { velocity: e.velocityX });
+        y.value = withSpring(initialY, { velocity: e.velocityY });
+        rotation.value = withSpring(0);
       }
     });
 
@@ -152,20 +165,22 @@ const ImageCard = ({
         { translateX: x.value },
         { translateY: y.value },
         { rotate: `${rotation.value}deg` },
-        { scale: scale.value },
+        { scale: withSpring(index === 0 ? scale.value : initialScale) },
       ],
+      opacity: opacity.value,
       zIndex: totalCards - index,
     };
   });
 
   useEffect(() => {
+    // Reset card position when index changes
     if (!isSwiped) {
       x.value = withSpring(0);
-      y.value = withSpring(0);
-      rotation.value = (Math.random() * 2 - 1) * 3;
-      scale.value = 1 - index * 0.05;
+      y.value = withSpring(initialY);
+      rotation.value = withSpring(0);
+      opacity.value = 1;
     }
-  }, [index]);
+  }, [index, isSwiped]);
 
   if (isSwiped) return null;
 
@@ -182,11 +197,11 @@ const ImageCard = ({
             shadowColor: '#000',
             shadowOffset: {
               width: 0,
-              height: 2,
+              height: 4,
             },
             shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
+            shadowRadius: 8,
+            elevation: 8,
           },
           animatedStyle,
         ]}>
@@ -211,15 +226,18 @@ const ImageStack = ({
   const handleSwipe = (index: number, direction: 'left' | 'right') => {
     const newImages = [...images];
     const [removed] = newImages.splice(index, 1);
-    newImages.push(removed);
-    onReorder(newImages);
+    if (newImages.length > 0) {
+      // Only add the image back if there are other images
+      newImages.push(removed);
+      onReorder(newImages);
+    }
   };
 
   return (
     <View className="h-[400] items-center justify-center">
       {images.map((uri, index) => (
         <ImageCard
-          key={uri}
+          key={uri + index} // Add index to key to force re-render when order changes
           uri={uri}
           index={index}
           totalCards={images.length}
