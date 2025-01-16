@@ -7,6 +7,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -35,6 +36,7 @@ import { Asset } from 'expo-asset';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetch } from 'expo/fetch';
 import { generateAPIUrl } from '~/lib/utils';
+import { Reset } from '~/lib/icons/Reset';
 
 interface Question {
   id: string;
@@ -402,6 +404,24 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     }));
   };
 
+  const handleReset = () => {
+    Alert.alert(
+      'Are you sure you want to reset?',
+      'This will reset your app idea and your personalized questions',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: resetForm,
+        },
+      ],
+    );
+  };
+
   const renderFirstStep = useMemo(
     () => (
       <Animated.View
@@ -490,16 +510,18 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       <View className="items-center space-y-4 -mt-20">
         <Animated.View style={floatingStyle}>
           {isImageLoaded && (
-            <Image
-              source={require('~/assets/images/icon-wand.png')}
-              style={{
-                width: 256,
-                height: 128,
-              }}
-              contentFit="contain"
-              cachePolicy="memory-disk"
-              transition={300}
-            />
+            <View className="shadow-lg shadow-primary/20">
+              <Image
+                source={require('~/assets/images/icon-wand.png')}
+                style={{
+                  width: 256,
+                  height: 128,
+                }}
+                contentFit="contain"
+                cachePolicy="memory-disk"
+                transition={300}
+              />
+            </View>
           )}
         </Animated.View>
         <View className="justify-center">
@@ -531,7 +553,9 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
             showsVerticalScrollIndicator={false}>
             <View className="space-y-8">
               <View>
-                <Text className="text-2xl font-medium mb-4">Questions</Text>
+                <Text className="text-base text-muted-foreground mb-6">
+                  These questions are optional and help personalize your app generation
+                </Text>
                 {formData.questions.map((q) => (
                   <View key={q.id} className="mb-4">
                     <Text className="text-lg mb-2">{q.question}</Text>
@@ -599,13 +623,15 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
         marginTop: 10,
       }}>
       <BottomSheetView style={{ flex: 1 }} className="pt-6">
-        <View className="flex-1 px-4">
+        <View className="flex-1 px-6">
           <View className="h-14 mb-8 flex-row justify-between items-center">
-            <Text className="text-4xl font-bold text-foreground">Create a New App</Text>
-            <View className="w-[76px] h-9">
-              {hasGenerated && (
-                <Button variant="ghost" className="h-9 px-4" onPress={resetForm}>
-                  <Text className="text-primary font-medium">Reset</Text>
+            <Text className="text-4xl font-bold text-foreground">
+              {step === 0 ? 'Create a New App' : 'Personalize Your App'}
+            </Text>
+            <View className="w-[76px]">
+              {!hasGenerated && (
+                <Button variant="ghost" onPress={handleReset}>
+                  <Reset size={24} className="text-destructive" />
                 </Button>
               )}
             </View>
