@@ -35,17 +35,17 @@ const WebsitePurposeStep = ({
       className="flex-1 px-6"
       entering={SlideInRight.duration(300)}
       exiting={SlideOutLeft.duration(300)}>
-      <Text className="text-4xl font-bold mb-2 text-foreground">
+      <Text className="text-4xl font-bold mb-3 text-foreground">
         Who are you creating a website for?
       </Text>
-      <Text className="text-lg text-muted-foreground mb-8">Let's get started!</Text>
+      <Text className="text-xl text-muted-foreground mb-8">Let's get started!</Text>
 
-      <RadioGroup value={value} onValueChange={onChange} className="gap-4">
+      <RadioGroup value={value} onValueChange={onChange} className="gap-5">
         {options.map((option) => (
           <TouchableOpacity
             key={option.value}
             onPress={() => onChange(option.value)}
-            className="flex-row items-center p-4 rounded-xl bg-secondary">
+            className="flex-row items-center p-5 rounded-xl bg-secondary">
             <RadioGroupItem
               value={option.value}
               aria-labelledby={`label-for-${option.value}`}
@@ -54,10 +54,10 @@ const WebsitePurposeStep = ({
             <View>
               <Label
                 nativeID={`label-for-${option.value}`}
-                className="text-lg font-semibold text-foreground">
+                className="text-xl font-semibold text-foreground mb-1">
                 {option.label}
               </Label>
-              <Text className="text-muted-foreground">{option.subtext}</Text>
+              <Text className="text-base text-muted-foreground">{option.subtext}</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -111,17 +111,17 @@ const WebsiteTypeStep = ({
       className="flex-1 px-6"
       entering={SlideInRight.duration(300)}
       exiting={SlideOutLeft.duration(300)}>
-      <Text className="text-4xl font-bold mb-2 text-foreground">
+      <Text className="text-4xl font-bold mb-3 text-foreground">
         What type of website do you want to create?
       </Text>
-      <Text className="text-lg text-muted-foreground mb-8">Select an option below</Text>
+      <Text className="text-xl text-muted-foreground mb-8">Select an option below</Text>
 
-      <RadioGroup value={value} onValueChange={onChange} className="gap-4">
+      <RadioGroup value={value} onValueChange={onChange} className="gap-5">
         {options.map((option) => (
           <TouchableOpacity
             key={option.value}
             onPress={() => onChange(option.value)}
-            className="flex-row items-center p-4 rounded-xl bg-secondary">
+            className="flex-row items-center p-5 rounded-xl bg-secondary">
             <RadioGroupItem
               value={option.value}
               aria-labelledby={`label-for-${option.value}`}
@@ -130,10 +130,10 @@ const WebsiteTypeStep = ({
             <View>
               <Label
                 nativeID={`label-for-${option.value}`}
-                className="text-lg font-semibold text-foreground">
+                className="text-xl font-semibold text-foreground mb-1">
                 {option.label}
               </Label>
-              <Text className="text-muted-foreground">{option.subtext}</Text>
+              <Text className="text-base text-muted-foreground">{option.subtext}</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -148,8 +148,8 @@ const SignInStep = () => {
       className="flex-1 px-6"
       entering={SlideInRight.duration(300)}
       exiting={SlideOutLeft.duration(300)}>
-      <Text className="text-4xl font-bold mb-2 text-foreground">Sign in to continue</Text>
-      <Text className="text-lg text-muted-foreground mb-8">
+      <Text className="text-4xl font-bold mb-3 text-foreground">Sign in to continue</Text>
+      <Text className="text-xl text-muted-foreground mb-8">
         Create an account or sign in to save your progress
       </Text>
       <View className="flex-1" />
@@ -211,8 +211,8 @@ export default function OnboardingScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       {/* Progress bar */}
-      <View className="px-6 pt-4 pb-8">
-        <View className="h-1 bg-muted rounded-full overflow-hidden">
+      <View className="px-6 pt-6 pb-8">
+        <View className="h-1.5 bg-muted rounded-full overflow-hidden">
           <Animated.View
             className="h-full bg-primary"
             entering={FadeIn}
@@ -234,7 +234,7 @@ export default function OnboardingScreen() {
             onPress={handleContinue}
             disabled={!canContinue()}>
             <Text
-              className={`text-center font-semibold text-lg ${
+              className={`text-center font-semibold text-xl ${
                 canContinue() ? 'text-primary-foreground' : 'text-muted-foreground'
               }`}>
               Continue
