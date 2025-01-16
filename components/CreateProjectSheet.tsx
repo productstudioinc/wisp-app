@@ -220,23 +220,42 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     try {
       setIsLoading(true);
 
+      const formattedName = formData.name
+        .toLowerCase()
+        .replace(/[^a-z0-9._-]/g, '-')
+        .replace(/---+/g, '--');
+
+      if (formattedName.length > 100) {
+        throw new Error('Project name must be 100 characters or less');
+      }
+
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
 
-      const { error } = await supabase.from('projects').insert({
-        name: formData.name,
-        prompt: formData.prompt,
-        status: 'creating',
-        user_id: userData.user.id,
-        project_id: crypto.randomUUID(),
+      const response = await fetch(generateAPIUrl('/api/projects'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formattedName,
+          prompt: formData.prompt || undefined,
+          userId: userData.user.id,
+        }),
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error('Failed to create project');
+      }
 
       bottomSheetModalRef.current?.dismiss();
       resetForm();
     } catch (error) {
       console.error('Error creating project:', error);
+      Alert.alert(
+        'Error',
+        error instanceof Error ? error.message : 'Failed to create project. Please try again.',
+      );
     } finally {
       setIsLoading(false);
     }
@@ -246,7 +265,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     if (step === 0) {
       return !!formData.name && !!formData.description;
     }
-    return formData.questions.every((q) => !!q.answer);
+    return true;
   };
 
   const handleReset = () => {

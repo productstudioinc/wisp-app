@@ -13,6 +13,7 @@ import { formatDistanceToNow } from 'date-fns';
 import * as Sharing from 'expo-sharing';
 import { Share2 } from '~/lib/icons/Share2';
 import { ExternalLink } from '~/lib/icons/ExternalLink';
+import { shareUrl, openUrl } from '~/lib/utils';
 
 type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
 
@@ -48,70 +49,60 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
     }
   };
 
-  const handleShare = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (project.custom_domain) {
-      await Sharing.shareAsync(project.custom_domain);
-    }
-  };
-
-  const handleOpen = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (project.custom_domain) {
-      Linking.openURL(project.custom_domain);
-    }
-  };
+  const handleShare = () => shareUrl(project.custom_domain, `Share ${project.name}`);
+  const handleOpen = () => openUrl(project.custom_domain);
 
   return (
     <Animated.View entering={FadeInUp.delay(index * 100)} layout={Layout}>
-      <View className="bg-card/80 backdrop-blur-md rounded-2xl py-5 px-6 mb-4 border border-border">
-        <View className="flex-row items-center">
-          <View className="w-14 h-14 rounded-xl bg-muted mr-4 overflow-hidden">
+      <View className="bg-card/80 backdrop-blur-md rounded-2xl py-4 px-5 mb-3 border border-border">
+        <View className="flex-row items-start">
+          <View className="w-12 h-12 rounded-xl bg-muted mr-4 overflow-hidden">
             {project.icon ? (
               <Image source={{ uri: project.icon }} className="w-full h-full" />
             ) : (
               <View className="w-full h-full bg-secondary items-center justify-center">
-                <Text className="text-xl font-semibold text-muted-foreground">
+                <Text className="text-lg font-semibold text-muted-foreground">
                   {project.name.charAt(0)}
                 </Text>
               </View>
             )}
           </View>
 
-          <View className="flex-1 flex-row items-center justify-between min-h-[56px]">
-            <View className="flex-1 mr-4">
-              <Text className="text-2xl font-semibold text-foreground mb-2" numberOfLines={1}>
+          <View className="flex-1">
+            <View className="flex-row items-center mb-1">
+              <Text className="text-xl font-semibold text-foreground mr-2" numberOfLines={1}>
                 {project.name}
               </Text>
-              <View className="flex-row items-center">
-                <View
-                  className={`w-2.5 h-2.5 rounded-full mr-2 ${getStatusColor(project.status)}`}
-                />
-                <Text className="text-base text-muted-foreground" numberOfLines={1}>
-                  {project.status}
-                  {project.status_message && ` • ${project.status_message}`}
-                </Text>
-              </View>
+              <View className={`w-2 h-2 rounded-full ${getStatusColor(project.status)}`} />
             </View>
 
-            <View className="flex-row items-center">
+            {project.prompt && (
+              <Text className="text-sm text-muted-foreground mb-3" numberOfLines={3}>
+                {project.prompt}
+              </Text>
+            )}
+
+            <View className="flex-row items-center justify-between">
               {project.created_at && (
-                <Text className="text-base text-muted-foreground mr-4">
+                <Text className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
                 </Text>
               )}
-              <TouchableOpacity
-                onPress={handleShare}
-                className="p-3 rounded-full bg-secondary mr-2.5"
-                disabled={!project.custom_domain}>
-                <Share2 size={22} className="text-foreground" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleOpen}
-                className="p-3 rounded-full bg-secondary"
-                disabled={!project.custom_domain}>
-                <ExternalLink size={22} className="text-foreground" />
-              </TouchableOpacity>
+
+              <View className="flex-row items-center">
+                <TouchableOpacity
+                  onPress={handleShare}
+                  className="p-2 rounded-full bg-secondary mr-2"
+                  disabled={!project.custom_domain}>
+                  <Share2 size={18} className="text-foreground" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleOpen}
+                  className="p-2 rounded-full bg-secondary"
+                  disabled={!project.custom_domain}>
+                  <ExternalLink size={18} className="text-foreground" />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>

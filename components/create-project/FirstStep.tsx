@@ -107,7 +107,9 @@ export default function FirstStep({
               <Text className="text-base text-muted-foreground mt-3">Choose an app icon</Text>
             </View>
             <View>
-              <Text className="text-lg font-medium mb-2">App Name</Text>
+              <Text className="text-lg font-medium mb-2">
+                App Name <Text className="text-red-500">*</Text>
+              </Text>
               <Input
                 value={name}
                 onChangeText={onNameChange}
@@ -122,7 +124,9 @@ export default function FirstStep({
               />
             </View>
             <View>
-              <Text className="text-lg font-medium mb-2 mt-2">App Idea</Text>
+              <Text className="text-lg font-medium mb-2 mt-2">
+                App Idea <Text className="text-red-500">*</Text>
+              </Text>
               <Input
                 ref={descriptionInputRef}
                 value={description}
