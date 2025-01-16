@@ -54,10 +54,23 @@ export default function FirstStep({
   onDescriptionChange,
   onPickImage,
 }: FirstStepProps) {
+  const nameInputRef = useRef<TextInput>(null);
   const descriptionInputRef = useRef<TextInput>(null);
 
   const handleDescriptionSubmit = () => {
+    const text = descriptionInputRef.current?.props.defaultValue as string;
+    if (text !== undefined) {
+      onDescriptionChange(text);
+    }
     descriptionInputRef.current?.blur();
+  };
+
+  const handleNameSubmit = () => {
+    const text = nameInputRef.current?.props.defaultValue as string;
+    if (text !== undefined) {
+      onNameChange(text);
+    }
+    descriptionInputRef.current?.focus();
   };
 
   const renderExampleIdeas = (
@@ -66,8 +79,14 @@ export default function FirstStep({
         <TouchableOpacity
           key={index}
           onPress={() => {
-            onNameChange(idea.name);
-            onDescriptionChange(idea.description);
+            if (nameInputRef.current) {
+              nameInputRef.current.setNativeProps({ text: idea.name });
+              onNameChange(idea.name);
+            }
+            if (descriptionInputRef.current) {
+              descriptionInputRef.current.setNativeProps({ text: idea.description });
+              onDescriptionChange(idea.description);
+            }
           }}
           className="mr-3 px-5 py-3 rounded-full bg-primary/10 border border-primary/20">
           <Text className="text-base text-primary font-medium">{idea.name}</Text>
@@ -111,16 +130,15 @@ export default function FirstStep({
                 App Name <Text className="text-red-500">*</Text>
               </Text>
               <Input
-                value={name}
-                onChangeText={onNameChange}
+                ref={nameInputRef}
+                defaultValue={name}
+                onEndEditing={(e) => onNameChange(e.nativeEvent.text)}
                 className="bg-transparent text-lg py-3"
                 placeholder="Enter your app name"
                 returnKeyType="next"
                 blurOnSubmit={false}
                 bottomSheet
-                onSubmitEditing={() => {
-                  descriptionInputRef.current?.focus();
-                }}
+                onSubmitEditing={handleNameSubmit}
               />
             </View>
             <View>
@@ -129,8 +147,8 @@ export default function FirstStep({
               </Text>
               <Input
                 ref={descriptionInputRef}
-                value={description}
-                onChangeText={onDescriptionChange}
+                defaultValue={description}
+                onEndEditing={(e) => onDescriptionChange(e.nativeEvent.text)}
                 multiline
                 bottomSheet
                 numberOfLines={4}

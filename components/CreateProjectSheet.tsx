@@ -4,13 +4,11 @@ import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/
 import { useFocusEffect } from '@react-navigation/native';
 import { useSharedValue } from 'react-native-reanimated';
 import { supabase } from '~/supabase/client';
-import { vars, useColorScheme } from 'nativewind';
+import { useColorScheme } from 'nativewind';
 import { Asset } from 'expo-asset';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { generateAPIUrl } from '~/lib/utils';
 import * as ImagePicker from 'expo-image-picker';
-import { Image } from 'expo-image';
-import { Text } from '~/components/ui/text';
 import StepHeader from './create-project/StepHeader';
 import FirstStep from './create-project/FirstStep';
 import SecondStep from './create-project/SecondStep';
@@ -26,7 +24,6 @@ interface Question {
 interface CreateProjectFormData {
   name: string;
   description: string;
-  prompt: string;
   icon: string | null;
   isGeneratingIcon: boolean;
   questions: Question[];
@@ -64,7 +61,6 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
   const [formData, setFormData] = useState<CreateProjectFormData>({
     name: '',
     description: '',
-    prompt: '',
     icon: null,
     isGeneratingIcon: false,
     questions: INITIAL_QUESTIONS,
@@ -135,9 +131,12 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       return;
     }
 
-    const hasContentChanged =
-      formData.name !== firstPageSnapshot.name ||
-      formData.description !== firstPageSnapshot.description;
+    setFormData((prev) => ({
+      ...prev,
+      questions: INITIAL_QUESTIONS,
+      imagesDescription: [],
+      imageSuggestions: '',
+    }));
 
     if (!hasGenerated) {
       // First time, always show loading
@@ -207,7 +206,6 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     setFormData({
       name: '',
       description: '',
-      prompt: '',
       icon: null,
       isGeneratingIcon: false,
       questions: INITIAL_QUESTIONS,
@@ -222,26 +220,55 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
 
       const formattedName = formData.name
         .toLowerCase()
-        .replace(/[^a-z0-9._-]/g, '-')
-        .replace(/---+/g, '--');
+        .replace(/[^a-zA-Z0-9_-]/g, '-')
+        .replace(/---+/g, '-');
 
       if (formattedName.length > 100) {
         throw new Error('Project name must be 100 characters or less');
       }
 
+      const additionalInfo = formData.questions
+        .map((q: Question) => `Q: ${q.question}\nA: ${q.answer}`)
+        .join('\n\n');
+
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
+
+      const form = new FormData();
+      form.append('name', formattedName);
+      form.append('description', formData.description);
+      form.append('userId', userData.user.id);
+      form.append('additionalInfo', additionalInfo);
+
+      if (formData.imagesDescription.length > 0) {
+        for (let i = 0; i < formData.imagesDescription.length; i++) {
+          const uri = formData.imagesDescription[i];
+          const name = uri.split('/').pop() || `image${i}.jpg`;
+          const type = 'image/jpeg';
+
+          form.append('images', {
+            uri,
+            name,
+            type,
+          } as any);
+        }
+      }
+
+      if (formData.icon) {
+        const iconName = formData.icon.split('/').pop() || 'icon.jpg';
+        form.append('icon', {
+          uri: formData.icon,
+          name: iconName,
+          type: 'image/jpeg',
+        } as any);
+      }
 
       const response = await fetch(generateAPIUrl('/api/projects'), {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
-        body: JSON.stringify({
-          name: formattedName,
-          prompt: formData.prompt || undefined,
-          userId: userData.user.id,
-        }),
+        body: form,
       });
 
       if (!response.ok) {

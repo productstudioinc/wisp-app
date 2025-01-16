@@ -49,8 +49,8 @@ export default function SecondStep({
                 <View key={q.id} className="mb-4">
                   <Text className="text-lg mb-2">{q.question}</Text>
                   <Input
-                    value={q.answer}
-                    onChangeText={(text) => onQuestionAnswer(q.id, text)}
+                    defaultValue={q.answer}
+                    onEndEditing={(e) => onQuestionAnswer(q.id, e.nativeEvent.text)}
                     className="bg-transparent text-lg py-3"
                     placeholder="Your answer"
                     multiline
