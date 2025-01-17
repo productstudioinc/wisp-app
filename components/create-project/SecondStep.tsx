@@ -60,7 +60,7 @@ export default function SecondStep({
               ))}
             </View>
 
-            <View className="space-y-4">
+            {/* <View className="space-y-4">
               <Text className="text-lg font-medium">Reference Images</Text>
 
               {imageSuggestions && (
@@ -74,7 +74,7 @@ export default function SecondStep({
                 onReorder={onImagesChange}
                 onAddImages={onAddImages}
               />
-            </View>
+            </View> */}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

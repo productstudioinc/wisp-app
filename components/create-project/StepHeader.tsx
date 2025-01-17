@@ -16,13 +16,12 @@ export default function StepHeader({ step, hasGenerated, onReset }: StepHeaderPr
       <Text className="text-4xl font-bold text-foreground">
         {step === 0 ? 'Create a New App' : 'Personalize Your App'}
       </Text>
-      <View className="w-[76px]">
-        {!hasGenerated && (
-          <Button variant="ghost" onPress={onReset}>
-            <Reset size={24} className="text-destructive" />
-          </Button>
-        )}
-      </View>
+
+      {!hasGenerated && (
+        <Button variant="ghost" onPress={onReset} size="icon">
+          <Reset size={24} className="text-destructive" />
+        </Button>
+      )}
     </View>
   );
 }
