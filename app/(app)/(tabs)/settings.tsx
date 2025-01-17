@@ -1,9 +1,11 @@
 import { supabase } from '@/supabase/client';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Background } from '~/components/ui/background';
+import { Button } from '~/components/ui/button';
+import { generateAPIUrl } from '~/lib/utils';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -11,6 +13,38 @@ export default function SettingsScreen() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.replace('/(auth)/welcome');
+  };
+
+  const handleDeleteAccount = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await fetch(generateAPIUrl(`/api/delete?userId=${user.id}`));
+              await supabase.auth.signOut();
+              router.replace('/(auth)/welcome');
+            } catch (error) {
+              Alert.alert('Error', 'Failed to delete account. Please try again.');
+            }
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -29,6 +63,14 @@ export default function SettingsScreen() {
               Sign Out
             </Text>
           </TouchableOpacity>
+
+          <Button
+            className="bg-destructive/10 py-4 px-6 rounded-full mt-4"
+            onPress={handleDeleteAccount}>
+            <Text className="text-center text-destructive font-semibold text-xl">
+              Delete Account
+            </Text>
+          </Button>
         </View>
       </SafeAreaView>
     </Background>
