@@ -58,12 +58,12 @@ export default function RootLayout() {
 
   useProtectedRoute(user);
 
-  // React.useEffect(() => {
-  //   const apiKey =
-  //     Platform.OS === 'ios' ? (process.env.EXPO_PUBLIC_SUPERWALL_IOS_API_KEY as string) : '';
+  React.useEffect(() => {
+    const apiKey =
+      Platform.OS === 'ios' ? (process.env.EXPO_PUBLIC_SUPERWALL_IOS_API_KEY as string) : '';
 
-  //   Superwall.configure(apiKey);
-  // }, []);
+    Superwall.configure(apiKey);
+  }, []);
 
   React.useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

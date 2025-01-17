@@ -9,6 +9,7 @@ import { Asset } from 'expo-asset';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { generateAPIUrl } from '~/lib/utils';
 import * as ImagePicker from 'expo-image-picker';
+import Superwall from '@superwall/react-native-superwall';
 import StepHeader from './create-project/StepHeader';
 import FirstStep from './create-project/FirstStep';
 import SecondStep from './create-project/SecondStep';
@@ -140,14 +141,15 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     }));
 
     if (!hasGenerated) {
-      // First time, always show loading
-      setIsTransitioning(true);
-      setFirstPageSnapshot({
-        name: formData.name,
-        description: formData.description,
-      });
-
       try {
+        await Superwall.shared.register('CreateStep1');
+
+        setIsTransitioning(true);
+        setFirstPageSnapshot({
+          name: formData.name,
+          description: formData.description,
+        });
+
         const response = await fetch(generateAPIUrl('/api/refine'), {
           method: 'POST',
           headers: {
