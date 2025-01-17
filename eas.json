@@ -7,6 +7,11 @@
         "simulator": true
       }
     },
-    "production": {}
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "cli": {
+    "appVersionSource": "remote"
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "wisp-app",
   "main": "index.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "start": "expo start -c",
     "dev": "expo start -c --ios",
@@ -12,8 +12,9 @@
     "web": "expo start -c --web",
     "clean": "rm -rf .expo node_modules",
     "postinstall": "npx tailwindcss -i ./global.css -o ./node_modules/.cache/nativewind/global.css",
-    "build:ios": "eas build --profile development --platform ios",
-    "build:android": "eas build --profile development --platform android",
+    "build:ios:dev": "eas build --profile development --platform ios",
+    "build:ios": "eas build --profile production --platform ios",
+    "build:android:dev": "eas build --profile development --platform android",
     "format": "prettier --write ."
   },
   "dependencies": {
