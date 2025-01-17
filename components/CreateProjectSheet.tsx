@@ -141,50 +141,50 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     }));
 
     if (!hasGenerated) {
-      try {
-        await Superwall.shared.register('CreateStep1');
-
+      Superwall.shared.register('CreateStep1', undefined, undefined, async () => {
         setIsTransitioning(true);
         setFirstPageSnapshot({
           name: formData.name,
           description: formData.description,
         });
 
-        const response = await fetch(generateAPIUrl('/api/refine'), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            description: formData.description,
-          }),
-        });
+        try {
+          const response = await fetch(generateAPIUrl('/api/refine'), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: formData.name,
+              description: formData.description,
+            }),
+          });
 
-        if (!response.ok) {
-          throw new Error('Failed to refine project');
+          if (!response.ok) {
+            throw new Error('Failed to refine project');
+          }
+
+          const data = await response.json();
+
+          setFormData((prev) => ({
+            ...prev,
+            questions: data.questions.map((question: string, index: number) => ({
+              id: (index + 1).toString(),
+              question,
+              answer: '',
+            })),
+            imageSuggestions: data.imageSuggestions,
+          }));
+
+          setIsTransitioning(false);
+          setStep(1);
+          setHasGenerated(true);
+          progress.value = 1;
+        } catch (error) {
+          console.error('Error refining project:', error);
+          setIsTransitioning(false);
         }
-
-        const data = await response.json();
-
-        setFormData((prev) => ({
-          ...prev,
-          questions: data.questions.map((question: string, index: number) => ({
-            id: (index + 1).toString(),
-            question,
-            answer: '',
-          })),
-          imageSuggestions: data.imageSuggestions,
-        }));
-
-        setIsTransitioning(false);
-        setStep(1);
-        setHasGenerated(true);
-        progress.value = 1;
-      } catch (error) {
-        console.error('Error refining project:', error);
-        setIsTransitioning(false);
-      }
+      });
     } else {
       // Already generated before, just navigate
       setStep(1);
