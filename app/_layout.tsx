@@ -2,7 +2,13 @@ import { supabase } from '@/supabase/client';
 import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
 import { PortalHost } from '@rn-primitives/portal';
 import Superwall from '@superwall/react-native-superwall';
-import { Stack, useRootNavigationState, useRouter, useSegments } from 'expo-router';
+import {
+  Stack,
+  useNavigationContainerRef,
+  useRootNavigationState,
+  useRouter,
+  useSegments,
+} from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { PostHogProvider } from 'posthog-react-native';
 import * as React from 'react';
@@ -13,6 +19,8 @@ import '~/global.css';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
+import { isRunningInExpoGo } from 'expo';
+import * as Sentry from '@sentry/react-native';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -22,6 +30,21 @@ const DARK_THEME: Theme = {
   ...DarkTheme,
   colors: NAV_THEME.dark,
 };
+
+const navigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: !isRunningInExpoGo(),
+});
+
+Sentry.init({
+  dsn: 'https://ba5c65f24e42cd1806804477a9bb0563@o4508661123907584.ingest.us.sentry.io/4508661129019392',
+  debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+  tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
+  integrations: [
+    // Pass integration
+    navigationIntegration,
+  ],
+  enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
+});
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -49,12 +72,21 @@ function useProtectedRoute(user: any) {
   }, [user, segments, navigationState?.key]);
 }
 
-export default function RootLayout() {
+export default Sentry.wrap(RootLayout);
+
+function RootLayout() {
   const hasMounted = React.useRef(false);
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
   const [user, setUser] = React.useState<any>(null);
   const [isLoading, setIsLoading] = React.useState(true);
+  const ref = useNavigationContainerRef();
+
+  React.useEffect(() => {
+    if (ref?.current) {
+      navigationIntegration.registerNavigationContainer(ref);
+    }
+  }, [ref]);
 
   useProtectedRoute(user);
 

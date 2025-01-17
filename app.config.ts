@@ -72,6 +72,16 @@ const config: ExpoConfig = {
     ],
     'expo-font',
     'expo-secure-store',
+    [
+      "@sentry/react-native/expo",
+      {
+        "organization": "wisp-ck",
+        "project": "wisp",
+        // If you are using a self-hosted instance, update the value of the url property
+        // to point towards your self-hosted instance. For example, https://self-hosted.example.com/.
+        "url": "https://sentry.io/"
+      }
+    ]
   ],
   experiments: {
     typedRoutes: true,
