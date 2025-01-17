@@ -1,14 +1,20 @@
 import { supabase } from '@/supabase/client';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { Platform, View } from 'react-native';
+import { Platform, View, useColorScheme } from 'react-native';
 
 export function Auth() {
+  const colorScheme = useColorScheme();
+
   if (Platform.OS === 'ios')
     return (
       <View className="overflow-hidden rounded-full">
         <AppleAuthentication.AppleAuthenticationButton
           buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-          buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
+          buttonStyle={
+            colorScheme === 'dark'
+              ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
+              : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+          }
           cornerRadius={0}
           style={{ width: '100%', height: 48 }}
           onPress={async () => {
