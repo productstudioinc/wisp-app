@@ -22,7 +22,7 @@ const AlertDialogOverlayWeb = React.forwardRef<
       className={cn(
         'z-50 bg-black/80 flex justify-center items-center p-2 absolute top-0 right-0 bottom-0 left-0',
         open ? 'web:animate-in web:fade-in-0' : 'web:animate-out web:fade-out-0',
-        className
+        className,
       )}
       {...props}
       ref={ref}
@@ -42,8 +42,7 @@ const AlertDialogOverlayNative = React.forwardRef<
       className={cn('z-50 bg-black/80 flex justify-center items-center p-2', className)}
       {...props}
       ref={ref}
-      asChild
-    >
+      asChild>
       <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(150)}>
         {children}
       </Animated.View>
@@ -74,7 +73,7 @@ const AlertDialogContent = React.forwardRef<
             open
               ? 'web:animate-in web:fade-in-0 web:zoom-in-95'
               : 'web:animate-out web:fade-out-0 web:zoom-out-95',
-            className
+            className,
           )}
           {...props}
         />

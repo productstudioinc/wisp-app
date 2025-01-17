@@ -1,16 +1,16 @@
 import { ExpoConfig } from 'expo/config';
 
 const config: ExpoConfig = {
-  name: "Wisp",
-  slug: "wisp-app",
-  owner: "productstudioinc",
-  version: "1.0.0",
-  orientation: "portrait",
-  icon: "./assets/images/icon.png",
-  scheme: "wisp",
-  userInterfaceStyle: "automatic",
-  description: "Wisp - Your AI App Generator",
-  primaryColor: "#000000",
+  name: 'Wisp',
+  slug: 'wisp-app',
+  owner: 'productstudioinc',
+  version: '1.0.0',
+  orientation: 'portrait',
+  icon: './assets/images/icon.png',
+  scheme: 'wisp',
+  userInterfaceStyle: 'automatic',
+  description: 'Wisp - Your AI App Generator',
+  primaryColor: '#000000',
   newArchEnabled: true,
   splash: {
     image: './assets/images/splash.png',
@@ -20,21 +20,22 @@ const config: ExpoConfig = {
   assetBundlePatterns: ['**/*'],
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "com.productstudio.wisp",
+    bundleIdentifier: 'com.productstudio.wisp',
     usesAppleSignIn: true,
     icon: {
-      light: "./assets/images/icon-light.png",
-      dark: "./assets/images/icon-dark.png",
-      tinted: "./assets/images/icon-tinted.png"
+      light: './assets/images/icon-light.png',
+      dark: './assets/images/icon-dark.png',
+      tinted: './assets/images/icon-tinted.png',
     },
     config: {
-      usesNonExemptEncryption: false
+      usesNonExemptEncryption: false,
     },
     infoPlist: {
-      NSCameraUsageDescription: "We need access to your camera to add reference images.",
-      NSPhotoLibraryUsageDescription: "We need access to your photo library to add reference images.",
-      CFBundleAllowMixedLocalizations: true
-    }
+      NSCameraUsageDescription: 'We need access to your camera to add reference images.',
+      NSPhotoLibraryUsageDescription:
+        'We need access to your photo library to add reference images.',
+      CFBundleAllowMixedLocalizations: true,
+    },
   },
   android: {
     adaptiveIcon: {

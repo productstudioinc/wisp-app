@@ -6,6 +6,7 @@ import React from 'react';
 import { Linking, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Auth } from '~/components/Auth.native';
 
 type OnboardingStep = {
   title: string;
@@ -93,11 +94,7 @@ export default function WelcomeScreen() {
             </Text>
           </View>
 
-          <TouchableOpacity className="bg-primary py-4 rounded-full" onPress={handleContinue}>
-            <Text className="text-primary-foreground text-center font-semibold text-xl">
-              Continue
-            </Text>
-          </TouchableOpacity>
+          <Auth />
         </View>
       </View>
     </SafeAreaView>
