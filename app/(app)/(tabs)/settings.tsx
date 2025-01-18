@@ -8,12 +8,14 @@ import { ThemeToggle } from '~/components/ThemeToggle';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { Button } from '~/components/ui/button';
+import { useColorScheme } from '~/lib/useColorScheme';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const [email, setEmail] = useState<string | null>(null);
   const [privateByDefault, setPrivateByDefault] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const { isDarkColorScheme } = useColorScheme();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -76,7 +78,14 @@ export default function SettingsScreen() {
                       Make new projects private by default
                     </Text>
                   </View>
-                  <Switch value={privateByDefault} onValueChange={handlePrivateToggle} />
+                  <Switch
+                    value={privateByDefault}
+                    onValueChange={handlePrivateToggle}
+                    trackColor={{
+                      true: isDarkColorScheme ? '#3f3f46' : '#000000',
+                      false: isDarkColorScheme ? '#27272A' : '#E5E5E5',
+                    }}
+                  />
                 </View>
 
                 <View className="flex-row justify-between items-center">
@@ -88,7 +97,14 @@ export default function SettingsScreen() {
                       Get notified about project updates
                     </Text>
                   </View>
-                  <Switch value={notificationsEnabled} onValueChange={handleNotificationsToggle} />
+                  <Switch
+                    value={notificationsEnabled}
+                    onValueChange={handleNotificationsToggle}
+                    trackColor={{
+                      true: isDarkColorScheme ? '#3f3f46' : '#000000',
+                      false: isDarkColorScheme ? '#27272A' : '#E5E5E5',
+                    }}
+                  />
                 </View>
               </View>
             </View>
