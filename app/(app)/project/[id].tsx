@@ -1,16 +1,17 @@
-import { View, Text, Image, ScrollView } from 'react-native';
+import { View, Text, Image, ScrollView, Alert, ActionSheetIOS } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatDistanceToNow } from 'date-fns';
 import { Share2 } from '~/lib/icons/Share2';
 import { ExternalLink } from '~/lib/icons/ExternalLink';
 import { TouchableOpacity } from 'react-native';
-import { shareUrl, openUrl } from '~/lib/utils';
+import { shareUrl, openUrl, generateAPIUrl } from '~/lib/utils';
 import { supabase } from '~/supabase/client';
 import { useEffect, useState } from 'react';
 import { Background } from '~/components/ui/background';
 import { ChevronLeft } from '~/lib/icons/ChevronLeft';
 import { Button } from '~/components/ui/button';
+import { MoreVertical } from '~/lib/icons/MoreVertical';
 
 type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
 
@@ -67,6 +68,66 @@ export default function ProjectDetails() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!project) return;
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError) {
+      console.error('Error getting user:', userError);
+      return;
+    }
+
+    try {
+      const response = await fetch(generateAPIUrl(`/api/projects/${project.name}`), {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userData.user.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete project');
+      }
+
+      router.back();
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      Alert.alert('Error', 'Failed to delete project. Please try again.');
+    }
+  };
+
+  const handleOpenMenu = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ['Cancel', 'Delete Project'],
+        cancelButtonIndex: 0,
+        destructiveButtonIndex: 1,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 1) {
+          Alert.alert(
+            'Delete Project',
+            'Are you sure you want to delete this project? This action cannot be undone.',
+            [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+              {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: handleDelete,
+              },
+            ],
+          );
+        }
+      },
+    );
+  };
+
   if (!project) return null;
 
   const faviconUrl = project.custom_domain ? `https://${project.custom_domain}/favicon.png` : null;
@@ -81,9 +142,14 @@ export default function ProjectDetails() {
         />
 
         <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 100 }}>
-          <View className="px-6 pt-4">
-            <TouchableOpacity onPress={() => router.back()} className="mb-4">
+          <View className="px-6 pt-4 flex-row justify-between items-center mb-4">
+            <TouchableOpacity onPress={() => router.back()}>
               <ChevronLeft size={24} className="text-foreground" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleOpenMenu}
+              className="w-10 h-10 items-center justify-center rounded-full">
+              <MoreVertical size={24} className="text-foreground" />
             </TouchableOpacity>
           </View>
 
