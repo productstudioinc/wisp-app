@@ -7,6 +7,11 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   runOnJS,
+  useSharedValue,
+  withTiming,
+  withRepeat,
+  withSequence,
+  interpolate,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { CreateProjectSheet } from '~/components/CreateProjectSheet';
@@ -44,6 +49,28 @@ interface Project {
 const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
   const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
+
+  const pulseAnim = useSharedValue(0);
+
+  useEffect(() => {
+    if (project.status === 'creating') {
+      pulseAnim.value = withRepeat(
+        withSequence(withTiming(1, { duration: 1000 }), withTiming(0, { duration: 1000 })),
+        -1, // Infinite repetition
+        true, // Reverse animation
+      );
+    } else {
+      pulseAnim.value = 0;
+    }
+  }, [project.status]);
+
+  const dotAnimatedStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(pulseAnim.value, [0, 1], [0.4, 1]);
+
+    return {
+      opacity,
+    };
+  });
 
   const getStatusColor = (status: ProjectStatus) => {
     switch (status) {
@@ -108,18 +135,15 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
               <Text className="text-xl font-semibold text-foreground mr-2" numberOfLines={1}>
                 {project.name}
               </Text>
-              <View className={`w-2 h-2 rounded-full ${getStatusColor(project.status)}`} />
+              <Animated.View
+                className={`w-2 h-2 rounded-full ${getStatusColor(project.status)}`}
+                style={project.status === 'creating' ? dotAnimatedStyle : undefined}
+              />
             </View>
 
             {project.created_at && (
               <Text className="text-sm text-muted-foreground mb-2">
                 {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
-              </Text>
-            )}
-
-            {project.prompt && (
-              <Text className="text-sm text-muted-foreground" numberOfLines={3}>
-                {project.prompt}
               </Text>
             )}
           </View>
