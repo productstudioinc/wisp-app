@@ -39,18 +39,28 @@ export default function ProjectDetails() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [project, setProject] = useState<Project | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProject = async () => {
-      const { data, error } = await supabase.from('projects').select('*').eq('id', id).single();
+    const fetchUserAndProject = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      setCurrentUserId(userData.user?.id ?? null);
 
-      if (!error && data) {
-        setProject(data);
+      const { data: projectData, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (!error && projectData) {
+        setProject(projectData);
       }
     };
 
-    fetchProject();
+    fetchUserAndProject();
   }, [id]);
+
+  const isOwner = currentUserId && project?.user_id === currentUserId;
 
   const handleShare = () =>
     project?.custom_domain && shareUrl(project.custom_domain, `Share ${project.name}`);
@@ -70,13 +80,7 @@ export default function ProjectDetails() {
   };
 
   const handleDelete = async () => {
-    if (!project) return;
-
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError) {
-      console.error('Error getting user:', userError);
-      return;
-    }
+    if (!project || !isOwner) return;
 
     try {
       const response = await fetch(generateAPIUrl(`/api/projects/${project.name}`), {
@@ -85,7 +89,7 @@ export default function ProjectDetails() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: userData.user.id,
+          userId: currentUserId,
         }),
       });
 
@@ -101,6 +105,8 @@ export default function ProjectDetails() {
   };
 
   const handleOpenMenu = () => {
+    if (!isOwner) return;
+
     ActionSheetIOS.showActionSheetWithOptions(
       {
         options: ['Cancel', 'Delete Project'],
@@ -148,11 +154,13 @@ export default function ProjectDetails() {
             <TouchableOpacity onPress={() => router.back()}>
               <ChevronLeft size={24} className="text-foreground" />
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleOpenMenu}
-              className="w-10 h-10 items-center justify-center rounded-full">
-              <MoreVertical size={24} className="text-foreground" />
-            </TouchableOpacity>
+            {isOwner && (
+              <TouchableOpacity
+                onPress={handleOpenMenu}
+                className="w-10 h-10 items-center justify-center rounded-full">
+                <MoreVertical size={24} className="text-foreground" />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
@@ -179,14 +187,16 @@ export default function ProjectDetails() {
                 <Text className="text-2xl font-title text-foreground mb-1" numberOfLines={2}>
                   {project.name}
                 </Text>
-                <View className="flex-row items-center">
-                  <View
-                    className={`w-2.5 h-2.5 rounded-full ${getStatusColor(project.status)} mr-2`}
-                  />
-                  <Text className="text-base text-muted-foreground capitalize">
-                    {project.status}
-                  </Text>
-                </View>
+                {isOwner && (
+                  <View className="flex-row items-center">
+                    <View
+                      className={`w-2.5 h-2.5 rounded-full ${getStatusColor(project.status)} mr-2`}
+                    />
+                    <Text className="text-base text-muted-foreground capitalize">
+                      {project.status}
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
           </View>
@@ -225,7 +235,7 @@ export default function ProjectDetails() {
                 </Text>
               </View>
 
-              {project.deployed_at && (
+              {isOwner && project.deployed_at && (
                 <View className="flex-row justify-between items-center">
                   <Text className="text-base text-muted-foreground">Last Updated</Text>
                   <Text className="text-base text-foreground">

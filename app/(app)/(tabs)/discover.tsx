@@ -32,19 +32,6 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
   const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
 
-  const getStatusColor = (status: ProjectStatus) => {
-    switch (status) {
-      case 'deployed':
-        return 'bg-green-500';
-      case 'creating':
-        return 'bg-yellow-500';
-      case 'deploying':
-        return 'bg-blue-500';
-      default:
-        return 'bg-red-500';
-    }
-  };
-
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -74,42 +61,38 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={1}
-        className="bg-card/80 backdrop-blur-md rounded-2xl py-4 px-5 mb-3 border border-border">
-        <View className="flex-row items-start">
-          <View className="w-12 h-12 rounded-xl bg-muted mr-4 overflow-hidden">
-            {faviconUrl ? (
-              <>
+        className="bg-card/80 backdrop-blur-md rounded-2xl py-5 px-5 mb-4 border border-border">
+        <View>
+          <View className="flex-row items-center mb-3">
+            <View className="w-10 h-10 rounded-xl bg-muted mr-3 overflow-hidden">
+              {faviconUrl ? (
                 <Image source={{ uri: faviconUrl }} className="w-full h-full" />
-              </>
-            ) : (
-              <View className="w-full h-full bg-secondary items-center justify-center">
-                <Text className="text-lg font-semibold text-muted-foreground">
-                  {project.name.charAt(0)}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          <View className="flex-1">
-            <View className="flex-row items-center mb-1">
-              <Text className="text-xl font-semibold text-foreground mr-2" numberOfLines={1}>
-                {project.name}
-              </Text>
-              <View className={`w-2 h-2 rounded-full ${getStatusColor(project.status)}`} />
+              ) : (
+                <View className="w-full h-full bg-secondary items-center justify-center">
+                  <Text className="text-base font-semibold text-muted-foreground">
+                    {project.name.charAt(0)}
+                  </Text>
+                </View>
+              )}
             </View>
 
-            {project.created_at && (
-              <Text className="text-sm text-muted-foreground mb-2">
-                {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
+            <View className="flex-1">
+              <Text className="text-lg font-semibold text-foreground" numberOfLines={1}>
+                {project.name}
               </Text>
-            )}
-
-            {project.prompt && (
-              <Text className="text-sm text-muted-foreground" numberOfLines={3}>
-                {project.prompt}
-              </Text>
-            )}
+              {project.created_at && (
+                <Text className="text-sm text-muted-foreground">
+                  {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
+                </Text>
+              )}
+            </View>
           </View>
+
+          {project.prompt && (
+            <Text className="text-base text-muted-foreground leading-5" numberOfLines={2}>
+              {project.prompt}
+            </Text>
+          )}
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -134,6 +117,7 @@ export default function DiscoverScreen() {
       .from('projects')
       .select('*')
       .eq('private', false)
+      .eq('status', 'deployed')
       .order('created_at', { ascending: false });
 
     if (error) {
