@@ -79,7 +79,7 @@ export default function ProjectDetails() {
           }}
         />
 
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 32 }}>
+        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 100 }}>
           <View className="px-6 py-4">
             <TouchableOpacity onPress={() => router.back()} className="mb-4">
               <ChevronLeft size={24} className="text-foreground" />
@@ -115,24 +115,6 @@ export default function ProjectDetails() {
               </View>
             </View>
 
-            <View className="flex-row mb-8 w-full">
-              <Button
-                className="flex-1 flex-row items-center justify-center"
-                onPress={handleOpen}
-                disabled={!project.custom_domain}>
-                <ExternalLink size={20} className="text-primary-foreground" />
-                <Text className="text-base font-medium text-primary-foreground ml-2">Open</Text>
-              </Button>
-
-              <Button
-                className="w-14 flex-row items-center justify-center ml-4"
-                onPress={handleShare}
-                disabled={!project.custom_domain}
-                variant="secondary">
-                <Share2 size={20} className="text-foreground" />
-              </Button>
-            </View>
-
             {project.prompt && (
               <View className="mb-8">
                 <Text className="text-lg font-medium text-foreground mb-2">About</Text>
@@ -143,6 +125,26 @@ export default function ProjectDetails() {
             )}
           </View>
         </ScrollView>
+
+        <SafeAreaView edges={['bottom']} className="px-6 pb-2">
+          <View className="flex-row w-full bg-background/80 backdrop-blur-lg">
+            <Button
+              className="flex-1 flex-row items-center justify-center rounded-full"
+              onPress={handleOpen}
+              disabled={!project.custom_domain}>
+              <ExternalLink size={20} className="text-primary-foreground" />
+              <Text className="text-base font-medium text-primary-foreground ml-2">Open</Text>
+            </Button>
+
+            <Button
+              className="w-14 flex-row items-center justify-center ml-4 rounded-full"
+              onPress={handleShare}
+              disabled={!project.custom_domain}
+              variant="secondary">
+              <Share2 size={20} className="text-foreground" />
+            </Button>
+          </View>
+        </SafeAreaView>
       </SafeAreaView>
     </Background>
   );
