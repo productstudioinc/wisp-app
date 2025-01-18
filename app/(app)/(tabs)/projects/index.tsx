@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Text, View, Pressable, ScrollView, TouchableOpacity, Linking, Image } from 'react-native';
+import { Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Animated, { FadeInUp, Layout } from 'react-native-reanimated';
+import Animated, {
+  FadeInUp,
+  Layout,
+  useAnimatedStyle,
+  withSpring,
+  runOnJS,
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { CreateProjectSheet } from '~/components/CreateProjectSheet';
 import { supabase } from '~/supabase/client';
@@ -13,6 +19,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Share2 } from '~/lib/icons/Share2';
 import { ExternalLink } from '~/lib/icons/ExternalLink';
 import { shareUrl, openUrl } from '~/lib/utils';
+import { useRouter } from 'expo-router';
 
 type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
 
@@ -35,6 +42,9 @@ interface Project {
 }
 
 const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
+  const router = useRouter();
+  const [isPressed, setIsPressed] = useState(false);
+
   const getStatusColor = (status: ProjectStatus) => {
     switch (status) {
       case 'deployed':
@@ -48,14 +58,36 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
     }
   };
 
-  const handleShare = () => shareUrl(project.custom_domain, `Share ${project.name}`);
-  const handleOpen = () => openUrl(project.custom_domain);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: withSpring(isPressed ? 0.95 : 1, {
+            damping: 15,
+            stiffness: 300,
+          }),
+        },
+      ],
+    };
+  });
+
+  const handlePress = () => {
+    setIsPressed(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setTimeout(() => {
+      setIsPressed(false);
+      router.push(`/project/${project.id}`);
+    }, 100);
+  };
 
   const faviconUrl = project.custom_domain ? `https://${project.custom_domain}/favicon.png` : null;
 
   return (
-    <Animated.View entering={FadeInUp.delay(index * 100)} layout={Layout}>
-      <View className="bg-card/80 backdrop-blur-md rounded-2xl py-4 px-5 mb-3 border border-border">
+    <Animated.View entering={FadeInUp.delay(index * 100)} layout={Layout} style={animatedStyle}>
+      <TouchableOpacity
+        onPress={handlePress}
+        activeOpacity={1}
+        className="bg-card/80 backdrop-blur-md rounded-2xl py-4 px-5 mb-3 border border-border">
         <View className="flex-row items-start">
           <View className="w-12 h-12 rounded-xl bg-muted mr-4 overflow-hidden">
             {faviconUrl ? (
@@ -79,37 +111,20 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
               <View className={`w-2 h-2 rounded-full ${getStatusColor(project.status)}`} />
             </View>
 
-            {project.prompt && (
-              <Text className="text-sm text-muted-foreground mb-3" numberOfLines={3}>
-                {project.prompt}
+            {project.created_at && (
+              <Text className="text-sm text-muted-foreground mb-2">
+                {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
               </Text>
             )}
 
-            <View className="flex-row items-center justify-between">
-              {project.created_at && (
-                <Text className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
-                </Text>
-              )}
-
-              <View className="flex-row items-center">
-                <TouchableOpacity
-                  onPress={handleShare}
-                  className="p-2 rounded-full bg-secondary mr-2"
-                  disabled={!project.custom_domain}>
-                  <Share2 size={18} className="text-foreground" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleOpen}
-                  className="p-2 rounded-full bg-secondary"
-                  disabled={!project.custom_domain}>
-                  <ExternalLink size={18} className="text-foreground" />
-                </TouchableOpacity>
-              </View>
-            </View>
+            {project.prompt && (
+              <Text className="text-sm text-muted-foreground" numberOfLines={3}>
+                {project.prompt}
+              </Text>
+            )}
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </Animated.View>
   );
 };
