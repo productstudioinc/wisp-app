@@ -142,8 +142,9 @@ export default function ProjectDetails() {
           }}
         />
 
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
-          <View className="px-6 pt-4 flex-row justify-between items-center mb-4">
+        <View className="w-full">
+          <BlurView intensity={20} className="absolute inset-0" />
+          <View className="px-6 py-4 flex-row justify-between items-center">
             <TouchableOpacity onPress={() => router.back()}>
               <ChevronLeft size={24} className="text-foreground" />
             </TouchableOpacity>
@@ -153,7 +154,9 @@ export default function ProjectDetails() {
               <MoreVertical size={24} className="text-foreground" />
             </TouchableOpacity>
           </View>
+        </View>
 
+        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
           <View className="px-6 mb-8">
             <View className="flex-row items-start">
               <View className="w-28 h-28 rounded-[22px] bg-muted overflow-hidden shadow-lg">
