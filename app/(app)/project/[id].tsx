@@ -12,6 +12,7 @@ import { Background } from '~/components/ui/background';
 import { ChevronLeft } from '~/lib/icons/ChevronLeft';
 import { Button } from '~/components/ui/button';
 import { MoreVertical } from '~/lib/icons/MoreVertical';
+import { BlurView } from 'expo-blur';
 
 type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
 
@@ -141,7 +142,7 @@ export default function ProjectDetails() {
           }}
         />
 
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 100 }}>
+        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
           <View className="px-6 pt-4 flex-row justify-between items-center mb-4">
             <TouchableOpacity onPress={() => router.back()}>
               <ChevronLeft size={24} className="text-foreground" />
@@ -233,23 +234,25 @@ export default function ProjectDetails() {
           </View>
         </ScrollView>
 
-        <SafeAreaView edges={['bottom']} className="px-6 pb-2">
-          <View className="flex-row w-full bg-background/80 backdrop-blur-lg">
-            <Button
-              className="flex-1 flex-row items-center justify-center rounded-full h-12"
-              onPress={handleOpen}
-              disabled={!project.custom_domain}>
-              <ExternalLink size={20} className="text-primary-foreground" />
-              <Text className="text-base font-medium text-primary-foreground ml-2">Open</Text>
-            </Button>
+        <SafeAreaView edges={['bottom']} className="absolute bottom-0 left-0 right-0">
+          <View className="px-6 pb-2">
+            <View className="flex-row w-full">
+              <Button
+                className="flex-1 flex-row items-center justify-center rounded-full h-12 shadow-xl"
+                onPress={handleOpen}
+                disabled={!project.custom_domain}>
+                <ExternalLink size={20} className="text-primary-foreground" />
+                <Text className="text-base font-medium text-primary-foreground ml-2">Open</Text>
+              </Button>
 
-            <Button
-              className="w-12 h-12 flex-row items-center justify-center ml-4 rounded-full"
-              onPress={handleShare}
-              disabled={!project.custom_domain}
-              variant="secondary">
-              <Share2 size={20} className="text-foreground" />
-            </Button>
+              <Button
+                className="w-12 h-12 flex-row items-center justify-center ml-4 rounded-full shadow-xl"
+                onPress={handleShare}
+                disabled={!project.custom_domain}
+                variant="secondary">
+                <Share2 size={20} className="text-foreground" />
+              </Button>
+            </View>
           </View>
         </SafeAreaView>
       </SafeAreaView>
