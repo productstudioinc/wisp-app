@@ -61,7 +61,7 @@ export default function WelcomeScreen() {
             Welcome to
           </Animated.Text>
           <Animated.Text
-            className="text-6xl font-black text-left text-primary"
+            className="text-6xl font-semibold text-left text-primary"
             entering={FadeInDown.delay(600).duration(1000).springify()}>
             Wisp AI
           </Animated.Text>

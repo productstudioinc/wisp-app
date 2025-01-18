@@ -21,6 +21,8 @@ import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { isRunningInExpoGo } from 'expo';
 import * as Sentry from '@sentry/react-native';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -34,6 +36,8 @@ const DARK_THEME: Theme = {
 const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay: !isRunningInExpoGo(),
 });
+
+SplashScreen.preventAutoHideAsync();
 
 Sentry.init({
   dsn: 'https://ba5c65f24e42cd1806804477a9bb0563@o4508661123907584.ingest.us.sentry.io/4508661129019392',
@@ -75,6 +79,9 @@ function useProtectedRoute(user: any) {
 export default Sentry.wrap(RootLayout);
 
 function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts({
+    'Obviously-Semibold': require('../assets/fonts/Obviously-Semibold.otf'),
+  });
   const hasMounted = React.useRef(false);
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
@@ -108,6 +115,12 @@ function RootLayout() {
     });
   }, []);
 
+  React.useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
   useIsomorphicLayoutEffect(() => {
     if (hasMounted.current) {
       return;
@@ -121,7 +134,7 @@ function RootLayout() {
     hasMounted.current = true;
   }, []);
 
-  if (!isColorSchemeLoaded || isLoading) {
+  if (!isColorSchemeLoaded || isLoading || (!fontsLoaded && !fontError)) {
     return null;
   }
 

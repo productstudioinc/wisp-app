@@ -187,7 +187,7 @@ export default function HomeScreen() {
       <SafeAreaView className="flex-1" edges={['top']}>
         <View className="flex-1 px-6">
           <View className="py-6">
-            <Text className="text-4xl font-bold text-foreground">My Apps</Text>
+            <Text className="text-4xl font-title text-foreground">My Apps</Text>
           </View>
 
           {projects.length > 0 ? (
