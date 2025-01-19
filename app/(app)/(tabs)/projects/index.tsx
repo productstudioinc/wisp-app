@@ -31,6 +31,7 @@ type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
 interface Project {
   id: string;
   name: string;
+  display_name: string;
   user_id: string;
   project_id: string;
   dns_record_id: string | null;
@@ -133,7 +134,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
           <View className="flex-1">
             <View className="flex-row items-center mb-1">
               <Text className="text-xl font-semibold text-foreground mr-2" numberOfLines={1}>
-                {project.name}
+                {project.display_name}
               </Text>
               <Animated.View
                 className={`w-2 h-2 rounded-full ${getStatusColor(project.status)}`}

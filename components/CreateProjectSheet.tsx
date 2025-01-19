@@ -221,12 +221,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     try {
       setIsLoading(true);
 
-      const formattedName = formData.name
-        .toLowerCase()
-        .replace(/[^a-zA-Z0-9_-]/g, '-')
-        .replace(/---+/g, '-');
-
-      if (formattedName.length > 100) {
+      if (formData.name.length > 100) {
         throw new Error('Project name must be 100 characters or less');
       }
 
@@ -238,7 +233,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       if (userError) throw userError;
 
       const form = new FormData();
-      form.append('name', formattedName);
+      form.append('name', formData.name);
       form.append('description', formData.description);
       form.append('userId', userData.user.id);
       form.append('additionalInfo', additionalInfo);

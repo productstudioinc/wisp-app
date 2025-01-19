@@ -21,6 +21,8 @@ interface Project {
   name: string;
   user_id: string;
   project_id: string;
+  display_name: string;
+  description: string;
   dns_record_id: string | null;
   custom_domain: string | null;
   prompt: string | null;
@@ -185,7 +187,7 @@ export default function ProjectDetails() {
 
               <View className="flex-1 ml-5 pt-1">
                 <Text className="text-2xl font-title text-foreground mb-1" numberOfLines={2}>
-                  {project.name}
+                  {project.display_name}
                 </Text>
                 {isOwner && (
                   <View className="flex-row items-center">
@@ -212,13 +214,38 @@ export default function ProjectDetails() {
 
           {project.mobile_screenshot && (
             <View className="mb-8">
+              {project.description && (
+                <View className="px-6 mb-6">
+                  <Text className="text-lg font-medium text-foreground mb-3">Description</Text>
+                  <Text className="text-base text-muted-foreground leading-relaxed">
+                    {project.description}
+                  </Text>
+                </View>
+              )}
               <Text className="text-lg font-medium text-foreground mb-3 px-6">Preview</Text>
               <View className="px-6">
-                <View className="w-[260px] aspect-[9/16] bg-muted rounded-3xl overflow-hidden shadow-xl mx-auto">
+                <View
+                  className="w-[260px] aspect-[3/4] bg-muted rounded-3xl overflow-hidden shadow-2xl mx-auto"
+                  style={{
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 4,
+                    },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4.65,
+                    elevation: 8,
+                  }}>
                   <Image
                     source={{ uri: project.mobile_screenshot }}
-                    className="w-full h-full"
                     resizeMode="cover"
+                    style={{
+                      position: 'absolute',
+                      width: '100%',
+                      height: undefined,
+                      aspectRatio: 9 / 19,
+                      top: 0,
+                    }}
                   />
                 </View>
               </View>

@@ -3,7 +3,6 @@ import { Text, View, ScrollView, TouchableOpacity, Image, RefreshControl } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Background } from '~/components/ui/background';
 import { supabase } from '~/supabase/client';
-import { formatDistanceToNow } from 'date-fns';
 import Animated, { FadeInUp, Layout, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -80,11 +79,6 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
               <Text className="text-lg font-semibold text-foreground" numberOfLines={1}>
                 {project.name}
               </Text>
-              {project.created_at && (
-                <Text className="text-sm text-muted-foreground">
-                  {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
-                </Text>
-              )}
             </View>
           </View>
 
