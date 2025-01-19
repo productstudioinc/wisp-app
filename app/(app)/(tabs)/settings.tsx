@@ -135,14 +135,14 @@ export default function SettingsScreen() {
 
                 <TouchableOpacity
                   className="flex-row justify-between items-center"
-                  onPress={() => openLink('https://yourapp.com/terms')}>
+                  onPress={() => openLink('https://usewisp.app/terms')}>
                   <Text className="text-base font-medium text-foreground">Terms of Service</Text>
                   <Text className="text-base text-primary">View</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   className="flex-row justify-between items-center"
-                  onPress={() => openLink('https://yourapp.com/privacy')}>
+                  onPress={() => openLink('https://usewisp.app/privacy')}>
                   <Text className="text-base font-medium text-foreground">Privacy Policy</Text>
                   <Text className="text-base text-primary">View</Text>
                 </TouchableOpacity>
