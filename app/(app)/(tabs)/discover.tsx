@@ -13,10 +13,11 @@ interface Project {
   id: string;
   name: string;
   user_id: string;
+  display_name: string;
   project_id: string;
   dns_record_id: string | null;
   custom_domain: string | null;
-  prompt: string | null;
+  description: string | null;
   status: ProjectStatus;
   created_at: string | null;
   status_message: string | null;
@@ -77,14 +78,14 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
 
             <View className="flex-1">
               <Text className="text-lg font-semibold text-foreground" numberOfLines={1}>
-                {project.name}
+                {project.display_name}
               </Text>
             </View>
           </View>
 
-          {project.prompt && (
+          {project.description && (
             <Text className="text-base text-muted-foreground leading-5" numberOfLines={2}>
-              {project.prompt}
+              {project.description}
             </Text>
           )}
         </View>
