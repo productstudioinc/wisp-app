@@ -40,17 +40,6 @@ const onboardingSteps: OnboardingStep[] = [
 ];
 
 export default function WelcomeScreen() {
-  const router = useRouter();
-
-  const handleContinue = async () => {
-    try {
-      await AsyncStorage.setItem('onboarding_complete', 'true');
-      router.push('/(auth)/onboarding');
-    } catch (error) {
-      console.error('Error saving onboarding status:', error);
-    }
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-primary-background">
       <View className="mx-auto w-full flex-1 justify-between px-8">
@@ -61,7 +50,7 @@ export default function WelcomeScreen() {
             Welcome to
           </Animated.Text>
           <Animated.Text
-            className="text-6xl font-semibold text-left text-primary"
+            className="text-6xl font-black text-left text-primary"
             entering={FadeInDown.delay(600).duration(1000).springify()}>
             Wisp AI
           </Animated.Text>
