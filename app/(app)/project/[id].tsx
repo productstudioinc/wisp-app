@@ -66,7 +66,14 @@ export default function ProjectDetails() {
 
   const handleShare = () =>
     project?.custom_domain && shareUrl(project.custom_domain, `Share ${project.name}`);
-  const handleOpen = () => project?.custom_domain && openUrl(project.custom_domain);
+  const handleOpen = () => {
+    if (!project?.custom_domain) return;
+    const params = new URLSearchParams({
+      title: project.display_name,
+      iconUrl: `https://${project.custom_domain}/favicon.png`,
+    });
+    openUrl(`${project.custom_domain}?${params.toString()}`);
+  };
 
   const getStatusColor = (status: ProjectStatus) => {
     switch (status) {

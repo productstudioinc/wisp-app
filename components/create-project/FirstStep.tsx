@@ -137,6 +137,7 @@ export default function FirstStep({
               <Input
                 ref={nameInputRef}
                 defaultValue={name}
+                onChangeText={onNameChange}
                 onEndEditing={(e) => onNameChange(e.nativeEvent.text)}
                 className="bg-transparent text-lg py-3"
                 placeholder="Enter your app name"
@@ -153,6 +154,7 @@ export default function FirstStep({
               <Input
                 ref={descriptionInputRef}
                 defaultValue={description}
+                onChangeText={onDescriptionChange}
                 onEndEditing={(e) => onDescriptionChange(e.nativeEvent.text)}
                 multiline
                 bottomSheet
