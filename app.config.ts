@@ -96,6 +96,9 @@ const config: ExpoConfig = {
       projectId: '3d62779f-23ce-4e87-b81f-c2735e905cdb',
     },
   },
+  runtimeVersion: {
+    policy: 'appVersion',
+  },
 };
 
 export default config;
