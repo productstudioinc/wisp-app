@@ -16,25 +16,39 @@ import { Button } from '../ui/button';
 
 const EXAMPLE_IDEAS = [
   {
-    name: 'Love Language Timer',
-    description: "Make a love language tracker for me and Jake to see who's more romantic",
-  },
-  {
     name: 'Study Session Aesthetic',
-    description: 'Make me a kawaii study timer with lofi aesthetics',
+    description: 'Make me a kawaii study timer with lofi aesthetics and character rewards',
   },
   {
-    name: 'Situationship Calculator',
+    name: 'Couples Daily Message',
     description:
-      "Make a situationship calculator that tells me if we're dating based on how many times we've hung out",
+      'Create a love message generator for my girlfriend Emma that gives her a new reason I love her every day',
   },
   {
-    name: 'Outfit Decision Maker',
-    description: 'Make an outfit randomizer for my capsule wardrobe',
+    name: 'Random Outfit Picker',
+    description: 'Make a simple outfit randomizer that helps me decide what to wear to class',
   },
   {
-    name: 'Gym Split Randomizer',
-    description: 'Make a workout generator for my gym bro Mark that gives him crazy exercises',
+    name: 'Morning Routine Randomizer',
+    description: 'Create a morning routine spinner that makes getting ready for class more fun',
+  },
+  {
+    name: 'Simple Workout Generator',
+    description:
+      'Make a basic workout generator that creates random exercise combinations for my dorm room',
+  },
+  {
+    name: 'Daily Gratitude Prompt',
+    description: 'Create a daily gratitude prompt generator with cute positive themes',
+  },
+  {
+    name: 'Excuse Generator',
+    description: 'Make a random excuse generator for when I sleep through my 8am class',
+  },
+  {
+    name: 'Study Break Timer',
+    description:
+      'Create a study break timer that gives me fun 5-minute challenges between sessions',
   },
 ];
 
