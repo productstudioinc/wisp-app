@@ -2,7 +2,6 @@ import { View, Text, Image, ScrollView, Alert, ActionSheetIOS } from 'react-nati
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatDistanceToNow } from 'date-fns';
-import { Share2 } from '~/lib/icons/Share2';
 import { ExternalLink } from '~/lib/icons/ExternalLink';
 import { TouchableOpacity } from 'react-native';
 import { shareUrl, openUrl, generateAPIUrl } from '~/lib/utils';
@@ -13,6 +12,8 @@ import { ChevronLeft } from '~/lib/icons/ChevronLeft';
 import { Button } from '~/components/ui/button';
 import { MoreVertical } from '~/lib/icons/MoreVertical';
 import { BlurView } from 'expo-blur';
+import { GradientBlur } from '~/components/ui/gradient-blur';
+import { Share } from '~/lib/icons/Share';
 
 type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
 
@@ -163,13 +164,21 @@ export default function ProjectDetails() {
             <TouchableOpacity onPress={() => router.back()}>
               <ChevronLeft size={24} className="text-foreground" />
             </TouchableOpacity>
-            {isOwner && (
+            <View className="flex-row items-center">
               <TouchableOpacity
-                onPress={handleOpenMenu}
-                className="w-10 h-10 items-center justify-center rounded-full">
-                <MoreVertical size={24} className="text-foreground" />
+                onPress={handleShare}
+                disabled={!project?.custom_domain}
+                className="w-10 h-10 items-center justify-center rounded-full mr-2">
+                <Share size={24} className="text-foreground" />
               </TouchableOpacity>
-            )}
+              {isOwner && (
+                <TouchableOpacity
+                  onPress={handleOpenMenu}
+                  className="w-10 h-10 items-center justify-center rounded-full">
+                  <MoreVertical size={24} className="text-foreground" />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         </View>
 
@@ -281,27 +290,20 @@ export default function ProjectDetails() {
           </View>
         </ScrollView>
 
-        <SafeAreaView edges={['bottom']} className="absolute bottom-0 left-0 right-0">
-          <View className="px-6 pb-2">
-            <View className="flex-row w-full">
+        <GradientBlur height={200}>
+          <SafeAreaView edges={['bottom']} className="flex-1 justify-end">
+            <View className="flex-row w-full px-6 pb-2">
               <Button
-                className="flex-1 flex-row items-center justify-center rounded-full h-12 shadow-xl"
+                className="flex-1 flex-row items-center justify-center rounded-full h-12 border-2 border-primary/10"
                 onPress={handleOpen}
-                disabled={!project.custom_domain}>
-                <ExternalLink size={20} className="text-primary-foreground" />
-                <Text className="text-base font-medium text-primary-foreground ml-2">Open</Text>
-              </Button>
-
-              <Button
-                className="w-12 h-12 flex-row items-center justify-center ml-4 rounded-full shadow-xl"
-                onPress={handleShare}
-                disabled={!project.custom_domain}
-                variant="secondary">
-                <Share2 size={20} className="text-foreground" />
+                disabled={!project?.custom_domain}>
+                <Text className="text-base font-title text-primary-foreground leading-none">
+                  Open
+                </Text>
               </Button>
             </View>
-          </View>
-        </SafeAreaView>
+          </SafeAreaView>
+        </GradientBlur>
       </SafeAreaView>
     </Background>
   );
