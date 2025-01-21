@@ -49,6 +49,9 @@ const config: ExpoConfig = {
     output: 'static',
     favicon: './assets/images/favicon.png',
   },
+  updates: {
+    url: 'https://u.expo.dev/3d62779f-23ce-4e87-b81f-c2735e905cdb',
+  },
   plugins: [
     'expo-router',
     [
@@ -72,15 +75,15 @@ const config: ExpoConfig = {
     ],
     'expo-secure-store',
     [
-      "@sentry/react-native/expo",
+      '@sentry/react-native/expo',
       {
-        "organization": "wisp-ck",
-        "project": "wisp",
+        organization: 'wisp-ck',
+        project: 'wisp',
         // If you are using a self-hosted instance, update the value of the url property
         // to point towards your self-hosted instance. For example, https://self-hosted.example.com/.
-        "url": "https://sentry.io/"
-      }
-    ]
+        url: 'https://sentry.io/',
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,
