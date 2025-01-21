@@ -12,6 +12,7 @@ import { Input } from '~/components/ui/input';
 import { Upload } from '~/lib/icons/Upload';
 import { Image } from 'expo-image';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
+import { Button } from '../ui/button';
 
 const EXAMPLE_IDEAS = [
   {
@@ -74,10 +75,15 @@ export default function FirstStep({
   };
 
   const renderExampleIdeas = (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row -mx-6 px-6">
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      className="flex-row -mx-6 px-6 pb-2"
+      contentContainerStyle={{ paddingRight: 24 }}>
       {EXAMPLE_IDEAS.map((idea, index) => (
-        <TouchableOpacity
+        <Button
           key={index}
+          variant="secondary"
           onPress={() => {
             if (nameInputRef.current) {
               nameInputRef.current.setNativeProps({ text: idea.name });
@@ -88,9 +94,9 @@ export default function FirstStep({
               onDescriptionChange(idea.description);
             }
           }}
-          className="mr-3 px-5 py-3 rounded-full bg-primary/10 border border-primary/20">
-          <Text className="text-base text-primary font-medium">{idea.name}</Text>
-        </TouchableOpacity>
+          className="mr-3 px-4 py-2.5 rounded-full border border-border">
+          <Text className="text-base font-medium">{idea.name}</Text>
+        </Button>
       ))}
     </ScrollView>
   );
