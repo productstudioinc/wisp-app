@@ -72,9 +72,9 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={1}
-        className="bg-card/80 backdrop-blur-md rounded-2xl py-5 px-5 mb-4 border border-border">
+        className="bg-card/80 backdrop-blur-md rounded-2xl py-4 px-4 mb-3 border border-border">
         <View>
-          <View className="flex-row items-center mb-3">
+          <View className="flex-row items-center mb-2.5">
             <View className="w-10 h-10 rounded-xl bg-muted mr-3 overflow-hidden">
               {faviconUrl ? (
                 <Image source={{ uri: faviconUrl }} className="w-full h-full" />
@@ -88,14 +88,14 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
             </View>
 
             <View className="flex-1">
-              <Text className="text-lg font-semibold text-foreground" numberOfLines={1}>
+              <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
                 {project.display_name}
               </Text>
             </View>
           </View>
 
           {project.description && (
-            <Text className="text-base text-muted-foreground leading-5" numberOfLines={2}>
+            <Text className="text-sm text-muted-foreground leading-[18px]" numberOfLines={2}>
               {project.description}
             </Text>
           )}
@@ -159,8 +159,8 @@ const LoadingState = () => (
 
 const EmptyState = () => (
   <View className="flex-1 items-center justify-center py-12">
-    <Text className="text-2xl font-semibold text-foreground mb-3">No public apps yet</Text>
-    <Text className="text-lg text-muted-foreground text-center px-6">
+    <Text className="text-xl font-semibold text-foreground mb-2">No public apps yet</Text>
+    <Text className="text-base text-muted-foreground text-center px-6">
       Check back later for inspiration from the community
     </Text>
   </View>
@@ -201,10 +201,10 @@ export default function DiscoverScreen() {
   return (
     <Background>
       <SafeAreaView className="flex-1" edges={['top']}>
-        <View className="flex-1 px-6">
-          <View className="py-6">
-            <Text className="text-4xl font-title mb-3 text-foreground">Discover</Text>
-            <Text className="text-xl text-muted-foreground">
+        <View className="flex-1 px-4">
+          <View className="px-4 py-4">
+            <Text className="text-3xl font-title text-foreground">Discover</Text>
+            <Text className="text-lg text-muted-foreground mt-1">
               Find inspiration for your next project
             </Text>
           </View>

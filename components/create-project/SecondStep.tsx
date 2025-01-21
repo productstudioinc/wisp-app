@@ -42,26 +42,28 @@ export default function SecondStep({
           showsVerticalScrollIndicator={false}>
           <View className="space-y-8">
             <View>
-              <Text className="text-base text-muted-foreground mb-6">
+              <Text className="text-sm text-muted-foreground mb-6">
                 These questions are optional and help personalize your app generation
               </Text>
-              {questions.map((q) => (
-                <View key={q.id} className="mb-4">
-                  <Text className="text-lg mb-2">{q.question}</Text>
-                  <Input
-                    defaultValue={q.answer}
-                    onEndEditing={(e) => onQuestionAnswer(q.id, e.nativeEvent.text)}
-                    className="bg-transparent text-lg py-3"
-                    placeholder="Your answer"
-                    multiline
-                    bottomSheet
-                  />
-                </View>
-              ))}
+              <View className="space-y-6">
+                {questions.map((q) => (
+                  <View key={q.id}>
+                    <Text className="text-base font-medium mb-2">{q.question}</Text>
+                    <Input
+                      defaultValue={q.answer}
+                      onEndEditing={(e) => onQuestionAnswer(q.id, e.nativeEvent.text)}
+                      className="bg-transparent text-base py-3.5"
+                      placeholder="Your answer"
+                      multiline
+                      bottomSheet
+                    />
+                  </View>
+                ))}
+              </View>
             </View>
 
             {/* <View className="space-y-4">
-              <Text className="text-lg font-medium">Reference Images</Text>
+              <Text className="text-base font-medium">Reference Images</Text>
 
               {imageSuggestions && (
                 <View className="bg-muted/50 p-4 rounded-2xl">

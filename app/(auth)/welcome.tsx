@@ -41,37 +41,39 @@ const onboardingSteps: OnboardingStep[] = [
 
 export default function WelcomeScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-primary-background">
-      <View className="mx-auto w-full flex-1 justify-between px-8">
-        <Animated.View className="pt-16" entering={FadeInDown.delay(0).duration(1000).springify()}>
+    <SafeAreaView className="flex-1 bg-primary-background" edges={['top']}>
+      <View className="mx-auto w-full flex-1 justify-between px-6">
+        <Animated.View className="pt-12" entering={FadeInDown.delay(0).duration(1000).springify()}>
           <Animated.Text
-            className="text-4xl font-black text-left mb-2 text-primary"
+            className="text-[28px] font-black text-left mb-1 text-primary"
             entering={FadeInDown.delay(300).duration(1000).springify()}>
             Welcome to
           </Animated.Text>
           <Animated.Text
-            className="text-6xl font-black text-left text-primary"
+            className="text-[34px] font-black text-left text-primary"
             entering={FadeInDown.delay(600).duration(1000).springify()}>
             Wisp AI
           </Animated.Text>
         </Animated.View>
 
-        <View className="gap-14 py-14">
+        <View className="gap-10 py-10">
           {onboardingSteps.map((step) => (
-            <View key={step.title} className="flex-row items-start gap-6">
-              <View className="w-12 items-center justify-center">{step.icon}</View>
+            <View key={step.title} className="flex-row items-start gap-4">
+              <View className="w-10 items-center justify-center">{step.icon}</View>
               <View className="flex-1">
-                <Text className="text-2xl font-semibold mb-2 text-foreground">{step.title}</Text>
-                <Text className="text-lg text-muted-foreground leading-6">{step.description}</Text>
+                <Text className="text-[22px] font-semibold mb-1 text-foreground">{step.title}</Text>
+                <Text className="text-[17px] text-muted-foreground leading-[22px]">
+                  {step.description}
+                </Text>
               </View>
             </View>
           ))}
         </View>
 
-        <View className="gap-8 pb-8">
-          <View className="items-center">
-            <MaterialIcons name="people" className="text-primary" size={28} />
-            <Text className="pt-3 text-center text-base text-muted-foreground">
+        <View className="gap-6 mb-8">
+          <View className="items-center px-6">
+            <MaterialIcons name="people" className="text-primary" size={24} />
+            <Text className="pt-2 text-center text-[15px] text-muted-foreground">
               By pressing continue, you agree to our{' '}
               <Text className="text-foreground" onPress={() => Linking.openURL('#')}>
                 Terms of Service

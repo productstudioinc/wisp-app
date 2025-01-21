@@ -132,7 +132,7 @@ export default function FirstStep({
               <View className="flex-row space-x-4">
                 <TouchableOpacity
                   onPress={onPickImage}
-                  className="w-28 h-28 rounded-2xl bg-muted justify-center items-center overflow-hidden border-2 border-dashed border-border">
+                  className="w-24 h-24 rounded-2xl bg-muted justify-center items-center overflow-hidden border-2 border-dashed border-border">
                   {icon ? (
                     <Image
                       source={{ uri: icon }}
@@ -141,56 +141,58 @@ export default function FirstStep({
                       transition={200}
                     />
                   ) : (
-                    <View className="items-center space-y-3">
-                      <Upload size={28} className="text-muted-foreground" />
-                      <Text className="text-base text-muted-foreground">Upload</Text>
+                    <View className="items-center space-y-2">
+                      <Upload size={24} className="text-muted-foreground" />
+                      <Text className="text-sm text-muted-foreground">Upload</Text>
                     </View>
                   )}
                 </TouchableOpacity>
               </View>
-              <Text className="text-base text-muted-foreground mt-3">Choose an app icon</Text>
+              <Text className="text-sm text-muted-foreground mt-2">Choose an app icon</Text>
             </View>
-            <View>
-              <Text className="text-lg font-medium mb-2">
-                App Name <Text className="text-red-500">*</Text>
-              </Text>
-              <Input
-                ref={nameInputRef}
-                defaultValue={name}
-                onChangeText={onNameChange}
-                onEndEditing={(e) => onNameChange(e.nativeEvent.text)}
-                className="bg-transparent text-lg py-3"
-                placeholder="Enter your app name"
-                returnKeyType="next"
-                blurOnSubmit={false}
-                bottomSheet
-                onSubmitEditing={handleNameSubmit}
-              />
-            </View>
-            <View>
-              <Text className="text-lg font-medium mb-2 mt-2">
-                App Idea <Text className="text-red-500">*</Text>
-              </Text>
-              <Input
-                ref={descriptionInputRef}
-                defaultValue={description}
-                onChangeText={onDescriptionChange}
-                onEndEditing={(e) => onDescriptionChange(e.nativeEvent.text)}
-                multiline
-                bottomSheet
-                numberOfLines={4}
-                className="min-h-[120] py-3 px-4 bg-transparent text-lg"
-                textAlignVertical="top"
-                placeholder="Describe your app idea"
-                returnKeyType="done"
-                blurOnSubmit={true}
-                onSubmitEditing={handleDescriptionSubmit}
-              />
-              <View className="mt-6">
-                <Text className="text-base text-muted-foreground mb-3">
-                  Or try one of these examples:
+            <View className="space-y-6">
+              <View>
+                <Text className="text-base font-medium mb-2">
+                  App Name <Text className="text-red-500">*</Text>
                 </Text>
-                {renderExampleIdeas}
+                <Input
+                  ref={nameInputRef}
+                  defaultValue={name}
+                  onChangeText={onNameChange}
+                  onEndEditing={(e) => onNameChange(e.nativeEvent.text)}
+                  className="bg-transparent text-base py-3.5"
+                  placeholder="Enter your app name"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                  bottomSheet
+                  onSubmitEditing={handleNameSubmit}
+                />
+              </View>
+              <View>
+                <Text className="text-base font-medium mb-2">
+                  App Idea <Text className="text-red-500">*</Text>
+                </Text>
+                <Input
+                  ref={descriptionInputRef}
+                  defaultValue={description}
+                  onChangeText={onDescriptionChange}
+                  onEndEditing={(e) => onDescriptionChange(e.nativeEvent.text)}
+                  multiline
+                  bottomSheet
+                  numberOfLines={4}
+                  className="min-h-[120] py-3.5 px-4 bg-transparent text-base"
+                  textAlignVertical="top"
+                  placeholder="Describe your app idea"
+                  returnKeyType="done"
+                  blurOnSubmit={true}
+                  onSubmitEditing={handleDescriptionSubmit}
+                />
+                <View className="mt-6">
+                  <Text className="text-sm text-muted-foreground mb-3">
+                    Or try one of these examples:
+                  </Text>
+                  {renderExampleIdeas}
+                </View>
               </View>
             </View>
           </View>

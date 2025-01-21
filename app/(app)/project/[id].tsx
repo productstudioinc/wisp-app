@@ -160,32 +160,34 @@ export default function ProjectDetails() {
 
         <View className="w-full">
           <BlurView intensity={20} className="absolute inset-0" />
-          <View className="px-6 py-4 flex-row justify-between items-center">
-            <TouchableOpacity onPress={() => router.back()}>
-              <ChevronLeft size={24} className="text-foreground" />
+          <View className="px-4 py-3 flex-row justify-between items-center">
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="w-10 h-10 -ml-2 items-center justify-center">
+              <ChevronLeft size={22} className="text-foreground" />
             </TouchableOpacity>
             <View className="flex-row items-center">
               <TouchableOpacity
                 onPress={handleShare}
                 disabled={!project?.custom_domain}
-                className="w-10 h-10 items-center justify-center rounded-full mr-2">
-                <Share size={24} className="text-foreground" />
+                className="w-10 h-10 items-center justify-center">
+                <Share size={22} className="text-foreground" />
               </TouchableOpacity>
               {isOwner && (
                 <TouchableOpacity
                   onPress={handleOpenMenu}
-                  className="w-10 h-10 items-center justify-center rounded-full">
-                  <MoreVertical size={24} className="text-foreground" />
+                  className="w-10 h-10 items-center justify-center">
+                  <MoreVertical size={22} className="text-foreground" />
                 </TouchableOpacity>
               )}
             </View>
           </View>
         </View>
 
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 140 }}>
-          <View className="px-6 mb-8">
+        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 120 }}>
+          <View className="px-4 mb-6">
             <View className="flex-row items-start">
-              <View className="w-28 h-28 rounded-[22px] bg-muted overflow-hidden shadow-lg">
+              <View className="w-24 h-24 rounded-[18px] bg-muted overflow-hidden shadow-lg">
                 {faviconUrl ? (
                   <Image
                     source={{ uri: faviconUrl }}
@@ -194,23 +196,23 @@ export default function ProjectDetails() {
                   />
                 ) : (
                   <View className="w-full h-full bg-secondary items-center justify-center">
-                    <Text className="text-3xl font-semibold text-muted-foreground">
+                    <Text className="text-2xl font-semibold text-muted-foreground">
                       {project.name.charAt(0)}
                     </Text>
                   </View>
                 )}
               </View>
 
-              <View className="flex-1 ml-5 pt-1">
-                <Text className="text-2xl font-title text-foreground mb-1" numberOfLines={2}>
+              <View className="flex-1 ml-4 pt-1">
+                <Text className="text-[22px] font-title text-foreground mb-1" numberOfLines={2}>
                   {project.display_name}
                 </Text>
                 {isOwner && (
                   <View className="flex-row items-center">
                     <View
-                      className={`w-2.5 h-2.5 rounded-full ${getStatusColor(project.status)} mr-2`}
+                      className={`w-2 h-2 rounded-full ${getStatusColor(project.status)} mr-2`}
                     />
-                    <Text className="text-base text-muted-foreground capitalize">
+                    <Text className="text-[15px] text-muted-foreground capitalize">
                       {project.status}
                     </Text>
                   </View>
@@ -220,36 +222,38 @@ export default function ProjectDetails() {
           </View>
 
           {project.prompt && (
-            <View className="px-6 mb-8">
-              <Text className="text-lg font-medium text-foreground mb-3">About</Text>
-              <Text className="text-base text-muted-foreground leading-relaxed">
+            <View className="px-4 mb-6">
+              <Text className="text-[17px] font-semibold text-foreground mb-2">About</Text>
+              <Text className="text-[15px] text-muted-foreground leading-[20px]">
                 {project.prompt}
               </Text>
             </View>
           )}
 
           {project.mobile_screenshot && (
-            <View className="mb-8">
+            <View className="mb-6">
               {project.description && (
-                <View className="px-6 mb-6">
-                  <Text className="text-lg font-medium text-foreground mb-3">Description</Text>
-                  <Text className="text-base text-muted-foreground leading-relaxed">
+                <View className="px-4 mb-6">
+                  <Text className="text-[17px] font-semibold text-foreground mb-2">
+                    Description
+                  </Text>
+                  <Text className="text-[15px] text-muted-foreground leading-[20px]">
                     {project.description}
                   </Text>
                 </View>
               )}
-              <Text className="text-lg font-medium text-foreground mb-3 px-6">Preview</Text>
-              <View className="px-6">
+              <Text className="text-[17px] font-semibold text-foreground mb-3 px-4">Preview</Text>
+              <View className="px-4">
                 <View
-                  className="w-[260px] aspect-[3/4] bg-muted rounded-3xl overflow-hidden shadow-2xl mx-auto"
+                  className="w-[240px] aspect-[3/4] bg-muted rounded-3xl overflow-hidden shadow-2xl mx-auto"
                   style={{
                     shadowColor: '#000',
                     shadowOffset: {
                       width: 0,
                       height: 4,
                     },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 4.65,
+                    shadowOpacity: 0.2,
+                    shadowRadius: 4,
                     elevation: 8,
                   }}>
                   <Image
@@ -268,20 +272,20 @@ export default function ProjectDetails() {
             </View>
           )}
 
-          <View className="px-6">
-            <Text className="text-lg font-medium text-foreground mb-3">Information</Text>
-            <View className="space-y-4">
+          <View className="px-4">
+            <Text className="text-[17px] font-semibold text-foreground mb-2">Information</Text>
+            <View className="space-y-3">
               <View className="flex-row justify-between items-center">
-                <Text className="text-base text-muted-foreground">Created</Text>
-                <Text className="text-base text-foreground">
+                <Text className="text-[15px] text-muted-foreground">Created</Text>
+                <Text className="text-[15px] text-foreground">
                   {formatDistanceToNow(new Date(project.created_at!), { addSuffix: true })}
                 </Text>
               </View>
 
               {isOwner && project.deployed_at && (
                 <View className="flex-row justify-between items-center">
-                  <Text className="text-base text-muted-foreground">Last Updated</Text>
-                  <Text className="text-base text-foreground">
+                  <Text className="text-[15px] text-muted-foreground">Last Updated</Text>
+                  <Text className="text-[15px] text-foreground">
                     {formatDistanceToNow(new Date(project.deployed_at), { addSuffix: true })}
                   </Text>
                 </View>
@@ -290,16 +294,14 @@ export default function ProjectDetails() {
           </View>
         </ScrollView>
 
-        <GradientBlur height={200}>
+        <GradientBlur height={140}>
           <SafeAreaView edges={['bottom']} className="flex-1 justify-end">
-            <View className="flex-row w-full px-6 pb-2">
+            <View className="flex-row w-full px-4 pb-2">
               <Button
                 className="flex-1 flex-row items-center justify-center rounded-full h-12 border-2 border-primary/10"
                 onPress={handleOpen}
                 disabled={!project?.custom_domain}>
-                <Text className="text-base font-title text-primary-foreground leading-none">
-                  Open
-                </Text>
+                <Text className="text-[17px] font-semibold text-primary-foreground">Open</Text>
               </Button>
             </View>
           </SafeAreaView>

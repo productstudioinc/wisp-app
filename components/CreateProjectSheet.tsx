@@ -408,11 +408,11 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       }}
       handleIndicatorStyle={{
         backgroundColor: colorScheme === 'dark' ? 'hsl(240 5% 64.9%)' : 'hsl(240 3.8% 46.1%)',
-        width: 40,
+        width: 32,
         height: 4,
-        marginTop: 10,
+        marginTop: 8,
       }}>
-      <BottomSheetView style={{ flex: 1 }} className="pt-6">
+      <BottomSheetView style={{ flex: 1 }} className="pt-4">
         <View className="flex-1 px-6">
           <StepHeader step={step} hasGenerated={hasGenerated} onReset={handleReset} />
 

@@ -21,9 +21,6 @@ import { Plus } from '~/lib/icons/Plus';
 import { Button } from '~/components/ui/button';
 import { Background } from '~/components/ui/background';
 import { formatDistanceToNow } from 'date-fns';
-import { Share2 } from '~/lib/icons/Share2';
-import { ExternalLink } from '~/lib/icons/ExternalLink';
-import { shareUrl, openUrl } from '~/lib/utils';
 import { useRouter } from 'expo-router';
 
 type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
@@ -115,16 +112,14 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={1}
-        className="bg-card/80 backdrop-blur-md rounded-2xl py-4 px-5 mb-3 border border-border">
+        className="bg-card/80 backdrop-blur-md rounded-2xl py-4 px-4 mb-3 border border-border">
         <View className="flex-row items-start">
-          <View className="w-12 h-12 rounded-xl bg-muted mr-4 overflow-hidden">
+          <View className="w-11 h-11 rounded-xl bg-muted mr-3 overflow-hidden">
             {faviconUrl ? (
-              <>
-                <Image source={{ uri: faviconUrl }} className="w-full h-full" />
-              </>
+              <Image source={{ uri: faviconUrl }} className="w-full h-full" />
             ) : (
               <View className="w-full h-full bg-secondary items-center justify-center">
-                <Text className="text-lg font-semibold text-muted-foreground">
+                <Text className="text-base font-semibold text-muted-foreground">
                   {project.name.charAt(0)}
                 </Text>
               </View>
@@ -132,8 +127,8 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
           </View>
 
           <View className="flex-1">
-            <View className="flex-row items-center mb-1">
-              <Text className="text-xl font-semibold text-foreground mr-2" numberOfLines={1}>
+            <View className="flex-row items-center mb-0.5">
+              <Text className="text-base font-semibold text-foreground mr-2" numberOfLines={1}>
                 {project.display_name}
               </Text>
               <Animated.View
@@ -143,7 +138,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
             </View>
 
             {project.created_at && (
-              <Text className="text-sm text-muted-foreground mb-2">
+              <Text className="text-sm text-muted-foreground">
                 {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
               </Text>
             )}
@@ -156,9 +151,9 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
 
 const EmptyState = () => (
   <View className="flex-1 items-center justify-center py-12">
-    <Sparkles className="w-16 h-16 text-muted-foreground mb-6" />
-    <Text className="text-2xl font-semibold text-foreground mb-3">No apps yet</Text>
-    <Text className="text-lg text-muted-foreground text-center px-6">
+    <Sparkles className="w-14 h-14 text-muted-foreground mb-4" />
+    <Text className="text-xl font-semibold text-foreground mb-2">No apps yet</Text>
+    <Text className="text-base text-muted-foreground text-center px-6">
       Create your first app to get started.{'\n'}It only takes a few seconds!
     </Text>
   </View>
@@ -225,9 +220,9 @@ export default function HomeScreen() {
   return (
     <Background>
       <SafeAreaView className="flex-1" edges={['top']}>
-        <View className="flex-1 px-6">
-          <View className="py-6">
-            <Text className="text-4xl font-title text-foreground">My Apps</Text>
+        <View className="flex-1 px-4">
+          <View className="px-4 py-4">
+            <Text className="text-3xl font-title text-foreground">My Apps</Text>
           </View>
 
           {projects.length > 0 ? (
@@ -253,8 +248,8 @@ export default function HomeScreen() {
             presentCreateProject?.();
           }}
           size="icon"
-          className="absolute bottom-8 right-6 w-16 h-16 bg-primary rounded-full items-center justify-center shadow-lg">
-          <Plus className="text-primary-foreground w-8 h-8" />
+          className="absolute bottom-8 right-4 w-14 h-14 bg-primary rounded-full items-center justify-center shadow-lg">
+          <Plus className="text-primary-foreground w-7 h-7" />
         </Button>
         <CreateProjectSheet onPresentRef={handlePresentRef} />
       </SafeAreaView>
