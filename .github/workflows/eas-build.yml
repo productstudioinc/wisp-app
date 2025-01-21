@@ -3,7 +3,7 @@ name: iOS App Release Build
 on:
   push:
     branches:
-      - main
+      - release
 
 jobs:
   build:
