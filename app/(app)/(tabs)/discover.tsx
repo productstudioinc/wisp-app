@@ -3,7 +3,18 @@ import { Text, View, ScrollView, TouchableOpacity, Image, RefreshControl } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Background } from '~/components/ui/background';
 import { supabase } from '~/supabase/client';
-import Animated, { FadeInUp, Layout, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, {
+  FadeInUp,
+  Layout,
+  useAnimatedStyle,
+  withSpring,
+  withRepeat,
+  withSequence,
+  withTiming,
+  Easing,
+  interpolate,
+  useSharedValue,
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 
@@ -94,6 +105,58 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
   );
 };
 
+const ProjectCardSkeleton = ({ index }: { index: number }) => {
+  const shimmerValue = useSharedValue(0);
+
+  useEffect(() => {
+    shimmerValue.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
+      ),
+      -1,
+      true,
+    );
+  }, []);
+
+  const shimmerStyle = useAnimatedStyle(() => {
+    const translateX = interpolate(shimmerValue.value, [0, 1], [-100, 100]);
+
+    return {
+      transform: [{ translateX }],
+    };
+  });
+
+  return (
+    <Animated.View entering={FadeInUp.delay(index * 100)} layout={Layout}>
+      <View className="bg-card/80 backdrop-blur-md rounded-2xl py-5 px-5 mb-4 border border-border overflow-hidden">
+        <View>
+          <View className="flex-row items-center mb-3">
+            <View className="w-10 h-10 rounded-xl bg-muted mr-3 overflow-hidden" />
+            <View className="flex-1">
+              <View className="h-6 bg-muted rounded-lg w-3/4" />
+            </View>
+          </View>
+          <View className="h-4 bg-muted rounded-lg w-full mb-2" />
+          <View className="h-4 bg-muted rounded-lg w-2/3" />
+          <Animated.View
+            className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+            style={shimmerStyle}
+          />
+        </View>
+      </View>
+    </Animated.View>
+  );
+};
+
+const LoadingState = () => (
+  <View>
+    {[0, 1, 2].map((index) => (
+      <ProjectCardSkeleton key={index} index={index} />
+    ))}
+  </View>
+);
+
 const EmptyState = () => (
   <View className="flex-1 items-center justify-center py-12">
     <Text className="text-2xl font-semibold text-foreground mb-3">No public apps yet</Text>
@@ -106,6 +169,7 @@ const EmptyState = () => (
 export default function DiscoverScreen() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchProjects = async () => {
     const { data, error } = await supabase
@@ -121,6 +185,7 @@ export default function DiscoverScreen() {
     }
 
     setProjects(data || []);
+    setIsLoading(false);
   };
 
   const onRefresh = useCallback(async () => {
@@ -144,7 +209,9 @@ export default function DiscoverScreen() {
             </Text>
           </View>
 
-          {projects.length > 0 ? (
+          {isLoading ? (
+            <LoadingState />
+          ) : projects.length > 0 ? (
             <ScrollView
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{
