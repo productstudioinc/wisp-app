@@ -1,7 +1,11 @@
 import { supabase } from '@/supabase/client';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
 import { PortalHost } from '@rn-primitives/portal';
+import * as Sentry from '@sentry/react-native';
 import Superwall from '@superwall/react-native-superwall';
+import { isRunningInExpoGo } from 'expo';
+import { useFonts } from 'expo-font';
 import {
   Stack,
   useNavigationContainerRef,
@@ -9,20 +13,16 @@ import {
   useRouter,
   useSegments,
 } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { PostHogProvider } from 'posthog-react-native';
 import * as React from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import '~/global.css';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { isRunningInExpoGo } from 'expo';
-import * as Sentry from '@sentry/react-native';
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,

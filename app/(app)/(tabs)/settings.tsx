@@ -1,14 +1,100 @@
 import { supabase } from '@/supabase/client';
-import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Alert, Text, TouchableOpacity, View, Linking, Switch, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Background } from '~/components/ui/background';
-import { ThemeToggle } from '~/components/ThemeToggle';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Alert,
+  Linking,
+  Platform,
+  ScrollView,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ThemeToggle } from '~/components/ThemeToggle';
+import { Background } from '~/components/ui/background';
 import { Button } from '~/components/ui/button';
 import { useColorScheme } from '~/lib/useColorScheme';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+async function sendPushNotification(expoPushToken: string) {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: 'Original Title',
+    body: 'And here is the body!',
+    data: { someData: 'goes here' },
+  };
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+}
+
+function handleRegistrationError(errorMessage: string) {
+  alert(errorMessage);
+  throw new Error(errorMessage);
+}
+
+async function registerForPushNotificationsAsync() {
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      handleRegistrationError('Permission not granted to get push token for push notification!');
+      return;
+    }
+    const projectId =
+      Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+    if (!projectId) {
+      handleRegistrationError('Project ID not found');
+    }
+    try {
+      const pushTokenString = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId,
+        })
+      ).data;
+      console.log(pushTokenString);
+      return pushTokenString;
+    } catch (e: unknown) {
+      handleRegistrationError(`${e}`);
+    }
+  } else {
+    handleRegistrationError('Must use physical device for push notifications');
+  }
+}
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -16,6 +102,35 @@ export default function SettingsScreen() {
   const [privateByDefault, setPrivateByDefault] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const { isDarkColorScheme } = useColorScheme();
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined,
+  );
+  const notificationListener = useRef<Notifications.EventSubscription>();
+  const responseListener = useRef<Notifications.EventSubscription>();
+  const [devModeCount, setDevModeCount] = useState(0);
+  const [devModeEnabled, setDevModeEnabled] = useState(false);
+
+  useEffect(() => {
+    registerForPushNotificationsAsync()
+      .then((token) => setExpoPushToken(token ?? ''))
+      .catch((error: any) => setExpoPushToken(`${error}`));
+
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      console.log(response);
+    });
+
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -30,6 +145,12 @@ export default function SettingsScreen() {
       setNotificationsEnabled(value === 'true');
     });
   }, []);
+
+  useEffect(() => {
+    if (devModeCount >= 10) {
+      setDevModeEnabled(true);
+    }
+  }, [devModeCount]);
 
   const handlePrivateToggle = async (value: boolean) => {
     setPrivateByDefault(value);
@@ -51,8 +172,10 @@ export default function SettingsScreen() {
         <View className="flex-1 px-6">
           {/* Header */}
           <View className="py-6">
-            <Text className="text-4xl font-title text-foreground">Settings</Text>
-            <Text className="text-xl text-muted-foreground mt-1">Manage your preferences</Text>
+            <TouchableOpacity onPress={() => setDevModeCount((count) => count + 1)}>
+              <Text className="text-4xl font-title text-foreground">Settings</Text>
+              <Text className="text-xl text-muted-foreground mt-1">Manage your preferences</Text>
+            </TouchableOpacity>
           </View>
 
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -148,6 +271,20 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
               </View>
             </View>
+
+            {/* Send Test Notification */}
+            {devModeEnabled && (
+              <Button
+                variant="default"
+                className="mb-3 rounded-full"
+                onPress={async () => {
+                  await sendPushNotification(expoPushToken);
+                }}>
+                <Text className="text-center text-destructive-foreground font-semibold text-lg">
+                  Send Test Notification
+                </Text>
+              </Button>
+            )}
 
             {/* Danger Zone */}
             <View className="mb-5">
