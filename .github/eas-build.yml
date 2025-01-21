@@ -1,28 +1,38 @@
+name: iOS App Release Build
+
 on:
   push:
     branches:
       - main
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
-      - name: 🏗 Setup repo
-        uses: actions/checkout@v3
+      - name: Setup repo
+        uses: actions/checkout@v4
 
-      - name: 🏗 Setup Node
-        uses: actions/setup-node@v3
+      - name: Setup node
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: 18.x
-          cache: yarn
+          cache: 'npm'
 
-      - name: 🏗 Setup EAS
+      - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
+          expo-version: latest
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📦 Install dependencies
-        run: yarn install
+      - name: Install dependencies
+        run: npm ci
 
-      - name: 🚀 Build app
-        run: eas build --non-interactive
+      - name: Build iOS app
+        run: eas build --platform ios --local --non-interactive --output ${{ github.workspace }}/app-release.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: ${{ github.workspace }}/app-release.ipa
