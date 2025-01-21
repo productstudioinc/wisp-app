@@ -202,7 +202,7 @@ export default function SettingsScreen() {
                   <View className="px-4 py-3.5 flex-row justify-between items-center">
                     <View>
                       <Text className="text-base font-medium text-foreground">Theme</Text>
-                      <Text className="text-sm text-muted-foreground mt-0.5">
+                      <Text className="text-base text-muted-foreground mt-0.5">
                         Light, dark, or system
                       </Text>
                     </View>
@@ -216,7 +216,7 @@ export default function SettingsScreen() {
                       <Text className="text-base font-medium text-foreground">
                         Private Projects
                       </Text>
-                      <Text className="text-sm text-muted-foreground mt-0.5">
+                      <Text className="text-base text-muted-foreground mt-0.5">
                         Make new projects private by default
                       </Text>
                     </View>
@@ -237,7 +237,7 @@ export default function SettingsScreen() {
                       <Text className="text-base font-medium text-foreground">
                         Push Notifications
                       </Text>
-                      <Text className="text-sm text-muted-foreground mt-0.5">
+                      <Text className="text-base text-muted-foreground mt-0.5">
                         Get notified about project updates
                       </Text>
                     </View>
@@ -262,7 +262,7 @@ export default function SettingsScreen() {
               <View className="backdrop-blur-md rounded-2xl overflow-hidden">
                 <View className="flex-row items-center justify-between px-4 py-3.5">
                   <View>
-                    <Text className="text-sm text-muted-foreground">Email</Text>
+                    <Text className="text-base text-muted-foreground">Email</Text>
                     <Text className="text-base font-medium text-foreground mt-0.5">{email}</Text>
                   </View>
                   <TouchableOpacity

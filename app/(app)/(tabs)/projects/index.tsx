@@ -138,7 +138,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
             </View>
 
             {project.created_at && (
-              <Text className="text-sm text-muted-foreground">
+              <Text className="text-base text-muted-foreground">
                 {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
               </Text>
             )}

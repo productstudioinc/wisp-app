@@ -95,7 +95,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
           </View>
 
           {project.description && (
-            <Text className="text-sm text-muted-foreground leading-[18px]" numberOfLines={2}>
+            <Text className="text-base text-muted-foreground leading-[22px]" numberOfLines={2}>
               {project.description}
             </Text>
           )}
@@ -204,7 +204,7 @@ export default function DiscoverScreen() {
         <View className="flex-1 px-4">
           <View className="px-4 py-4">
             <Text className="text-3xl font-title text-foreground">Discover</Text>
-            <Text className="text-lg text-muted-foreground mt-1">
+            <Text className="text-base text-muted-foreground mt-1">
               Find inspiration for your next project
             </Text>
           </View>

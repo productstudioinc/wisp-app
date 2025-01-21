@@ -143,56 +143,54 @@ export default function FirstStep({
                   ) : (
                     <View className="items-center space-y-2">
                       <Upload size={24} className="text-muted-foreground" />
-                      <Text className="text-sm text-muted-foreground">Upload</Text>
+                      <Text className="text-base text-muted-foreground">Upload</Text>
                     </View>
                   )}
                 </TouchableOpacity>
               </View>
-              <Text className="text-sm text-muted-foreground mt-2">Choose an app icon</Text>
+              <Text className="text-base text-muted-foreground mt-3">Choose an app icon</Text>
             </View>
-            <View className="space-y-6">
-              <View>
-                <Text className="text-base font-medium mb-2">
-                  App Name <Text className="text-red-500">*</Text>
+            <View>
+              <Text className="text-xl font-medium mb-3">
+                App Name <Text className="text-red-500">*</Text>
+              </Text>
+              <Input
+                ref={nameInputRef}
+                defaultValue={name}
+                onChangeText={onNameChange}
+                onEndEditing={(e) => onNameChange(e.nativeEvent.text)}
+                className="bg-transparent text-base py-4"
+                placeholder="Enter your app name"
+                returnKeyType="next"
+                blurOnSubmit={false}
+                bottomSheet
+                onSubmitEditing={handleNameSubmit}
+              />
+            </View>
+            <View>
+              <Text className="text-xl font-medium mb-3 pt-4">
+                App Idea <Text className="text-red-500">*</Text>
+              </Text>
+              <Input
+                ref={descriptionInputRef}
+                defaultValue={description}
+                onChangeText={onDescriptionChange}
+                onEndEditing={(e) => onDescriptionChange(e.nativeEvent.text)}
+                multiline
+                bottomSheet
+                numberOfLines={4}
+                className="min-h-[120] py-4 px-4 bg-transparent text-base"
+                textAlignVertical="top"
+                placeholder="Describe your app idea"
+                returnKeyType="done"
+                blurOnSubmit={true}
+                onSubmitEditing={handleDescriptionSubmit}
+              />
+              <View className="mt-8">
+                <Text className="text-base text-muted-foreground mb-4">
+                  Or try one of these examples:
                 </Text>
-                <Input
-                  ref={nameInputRef}
-                  defaultValue={name}
-                  onChangeText={onNameChange}
-                  onEndEditing={(e) => onNameChange(e.nativeEvent.text)}
-                  className="bg-transparent text-base py-3.5"
-                  placeholder="Enter your app name"
-                  returnKeyType="next"
-                  blurOnSubmit={false}
-                  bottomSheet
-                  onSubmitEditing={handleNameSubmit}
-                />
-              </View>
-              <View>
-                <Text className="text-base font-medium mb-2">
-                  App Idea <Text className="text-red-500">*</Text>
-                </Text>
-                <Input
-                  ref={descriptionInputRef}
-                  defaultValue={description}
-                  onChangeText={onDescriptionChange}
-                  onEndEditing={(e) => onDescriptionChange(e.nativeEvent.text)}
-                  multiline
-                  bottomSheet
-                  numberOfLines={4}
-                  className="min-h-[120] py-3.5 px-4 bg-transparent text-base"
-                  textAlignVertical="top"
-                  placeholder="Describe your app idea"
-                  returnKeyType="done"
-                  blurOnSubmit={true}
-                  onSubmitEditing={handleDescriptionSubmit}
-                />
-                <View className="mt-6">
-                  <Text className="text-sm text-muted-foreground mb-3">
-                    Or try one of these examples:
-                  </Text>
-                  {renderExampleIdeas}
-                </View>
+                {renderExampleIdeas}
               </View>
             </View>
           </View>

@@ -7,6 +7,15 @@ module.exports = {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
+      fontSize: {
+        xs: '11px',
+        sm: '13px',
+        base: '17px',
+        lg: '20px',
+        xl: '22px',
+        '2xl': '28px',
+        '3xl': '34px',
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
