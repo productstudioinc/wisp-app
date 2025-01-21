@@ -165,7 +165,12 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const { data, error } = await supabase.from('projects').select('*');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase.from('projects').select('*').eq('user_id', user.id);
 
       if (error) {
         console.error('Error fetching projects:', error);
@@ -185,6 +190,7 @@ export default function HomeScreen() {
           event: '*',
           schema: 'public',
           table: 'projects',
+          filter: `user_id=eq.${supabase.auth.getUser().then(({ data }) => data.user?.id)}`,
         },
         (payload) => {
           console.log('Change received:', payload);

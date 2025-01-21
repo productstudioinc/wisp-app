@@ -46,7 +46,7 @@ export default function SecondStep({
             </Text>
             {questions.map((q) => (
               <View key={q.id}>
-                <Text className="text-xl font-medium mb-3 pt-3">{q.question}</Text>
+                <Text className="text-xl font-medium mb-3">{q.question}</Text>
                 <Input
                   defaultValue={q.answer}
                   onEndEditing={(e) => onQuestionAnswer(q.id, e.nativeEvent.text)}
