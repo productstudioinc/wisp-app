@@ -138,7 +138,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
             </View>
 
             {project.created_at && (
-              <Text className="text-sm text-muted-foreground">
+              <Text className="text-base text-muted-foreground">
                 {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
               </Text>
             )}
@@ -165,7 +165,12 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const { data, error } = await supabase.from('projects').select('*');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase.from('projects').select('*').eq('user_id', user.id);
 
       if (error) {
         console.error('Error fetching projects:', error);
@@ -185,6 +190,7 @@ export default function HomeScreen() {
           event: '*',
           schema: 'public',
           table: 'projects',
+          filter: `user_id=eq.${supabase.auth.getUser().then(({ data }) => data.user?.id)}`,
         },
         (payload) => {
           console.log('Change received:', payload);

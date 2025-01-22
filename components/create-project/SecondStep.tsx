@@ -41,29 +41,27 @@ export default function SecondStep({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}>
           <View className="space-y-8">
-            <View>
-              <Text className="text-sm text-muted-foreground mb-6">
-                These questions are optional and help personalize your app generation
-              </Text>
-              <View className="space-y-6">
-                {questions.map((q) => (
-                  <View key={q.id}>
-                    <Text className="text-base font-medium mb-2">{q.question}</Text>
-                    <Input
-                      defaultValue={q.answer}
-                      onEndEditing={(e) => onQuestionAnswer(q.id, e.nativeEvent.text)}
-                      className="bg-transparent text-base py-3.5"
-                      placeholder="Your answer"
-                      multiline
-                      bottomSheet
-                    />
-                  </View>
-                ))}
+            <Text className="text-base text-muted-foreground mb-8">
+              These questions are optional and help personalize your app generation
+            </Text>
+            {questions.map((q) => (
+              <View key={q.id}>
+                <Text className="text-xl font-medium mb-3">{q.question}</Text>
+                <Input
+                  defaultValue={q.answer}
+                  onEndEditing={(e) => onQuestionAnswer(q.id, e.nativeEvent.text)}
+                  className="bg-transparent text-base py-4 min-h-[44px]"
+                  placeholder="Your answer"
+                  multiline
+                  bottomSheet
+                  textAlignVertical="top"
+                  style={{ paddingBottom: 12 }}
+                />
               </View>
-            </View>
+            ))}
 
             {/* <View className="space-y-4">
-              <Text className="text-base font-medium">Reference Images</Text>
+              <Text className="text-xl font-medium">Reference Images</Text>
 
               {imageSuggestions && (
                 <View className="bg-muted/50 p-4 rounded-2xl">
