@@ -20,6 +20,9 @@ importers:
       '@gorhom/bottom-sheet':
         specifier: ^5.0.6
         version: 5.0.6(@types/react-native@0.70.19)(@types/react@18.3.18)(react-native-gesture-handler@2.20.2(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(encoding@0.1.13)(react@18.3.1))(react@18.3.1))(react-native-reanimated@3.16.6(@babel/core@7.26.0)(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(encoding@0.1.13)(react@18.3.1))(react@18.3.1))(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(encoding@0.1.13)(react@18.3.1))(react@18.3.1)
+      '@legendapp/state':
+        specifier: ^2.1.15
+        version: 2.1.15(react@18.3.1)
       '@react-native-async-storage/async-storage':
         specifier: 1.23.1
         version: 1.23.1(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(encoding@0.1.13)(react@18.3.1))
@@ -1278,6 +1281,14 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@legendapp/state@2.1.15':
+    resolution: {integrity: sha512-7/8Rgg7m38eznupr36QJeSkrtbhVxaRtQvRMjdBigSm+HW3ZIFgMtUX1DqZ2hJxbPqqAJamw5s+TLs8dRstUNw==}
+    peerDependencies:
+      react: '>=16.8.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -7173,6 +7184,12 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  '@legendapp/state@2.1.15(react@18.3.1)':
+    dependencies:
+      use-sync-external-store: 1.4.0(react@18.3.1)
+    optionalDependencies:
+      react: 18.3.1
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:

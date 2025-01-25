@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { Text, View, ScrollView, TouchableOpacity, Image, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
   FadeInUp,
@@ -15,34 +15,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { CreateProjectSheet } from '~/components/CreateProjectSheet';
-import { supabase } from '~/supabase/client';
 import { Sparkles } from '~/lib/icons/Sparkles';
 import { Plus } from '~/lib/icons/Plus';
 import { Button } from '~/components/ui/button';
 import { Background } from '~/components/ui/background';
 import { formatDistanceToNow } from 'date-fns';
 import { useRouter } from 'expo-router';
-
-type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
-
-interface Project {
-  id: string;
-  name: string;
-  display_name: string;
-  user_id: string;
-  project_id: string;
-  dns_record_id: string | null;
-  custom_domain: string | null;
-  prompt: string | null;
-  status: ProjectStatus;
-  created_at: string | null;
-  status_message: string | null;
-  last_updated: string | null;
-  error: string | null;
-  deployed_at: string | null;
-  private: boolean;
-  icon: string | null;
-}
+import { Project, ProjectStatus, projectsState, projectsActions } from '~/lib/stores/projects';
+import { observer } from '@legendapp/state/react';
 
 const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
   const router = useRouter();
@@ -159,69 +139,39 @@ const EmptyState = () => (
   </View>
 );
 
-export default function HomeScreen() {
-  const [projects, setProjects] = useState<Project[]>([]);
+const HomeScreen = observer(() => {
   const [presentCreateProject, setPresentCreateProject] = useState<(() => void) | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const projects = projectsState.projects.get();
+  const isLoading = projectsState.isLoading.get();
+  const error = projectsState.error.get();
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await projectsActions.fetchProjects();
+    setRefreshing(false);
+  }, []);
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase.from('projects').select('*').eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error fetching projects:', error);
-        return;
-      }
-
-      setProjects(data || []);
-    };
-
-    fetchProjects();
-
-    const channel = supabase
-      .channel('projects-channel')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'projects',
-          filter: `user_id=eq.${supabase.auth.getUser().then(({ data }) => data.user?.id)}`,
-        },
-        (payload) => {
-          console.log('Change received:', payload);
-
-          switch (payload.eventType) {
-            case 'INSERT':
-              setProjects((current) => [...current, payload.new as Project]);
-              break;
-            case 'UPDATE':
-              setProjects((current) =>
-                current.map((project) =>
-                  project.id === payload.new.id ? (payload.new as Project) : project,
-                ),
-              );
-              break;
-            case 'DELETE':
-              setProjects((current) => current.filter((project) => project.id !== payload.old.id));
-              break;
-          }
-        },
-      )
-      .subscribe();
-
-    return () => {
-      channel.unsubscribe();
-    };
+    projectsActions.fetchProjects();
+    const cleanup = projectsActions.setupRealtimeSubscription();
+    return cleanup;
   }, []);
 
   const handlePresentRef = useCallback((present: () => void) => {
     setPresentCreateProject(() => present);
   }, []);
+
+  if (error) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text className="text-destructive text-base">Error: {error}</Text>
+        <Button onPress={onRefresh} variant="outline" className="mt-4">
+          Retry
+        </Button>
+      </View>
+    );
+  }
 
   return (
     <Background>
@@ -234,6 +184,7 @@ export default function HomeScreen() {
           {projects.length > 0 ? (
             <ScrollView
               showsVerticalScrollIndicator={false}
+              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
               contentContainerStyle={{
                 flexGrow: 0,
               }}>
@@ -261,4 +212,6 @@ export default function HomeScreen() {
       </SafeAreaView>
     </Background>
   );
-}
+});
+
+export default HomeScreen;
