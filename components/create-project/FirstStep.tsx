@@ -184,11 +184,8 @@ export default function FirstStep({
                 textAlignVertical="top"
                 placeholder="Describe your app idea"
                 returnKeyType="default"
-                blurOnSubmit={true}
-                enablesReturnKeyAutomatically
-                onSubmitEditing={() => {
-                  descriptionInputRef.current?.blur();
-                }}
+                blurOnSubmit={false}
+                enablesReturnKeyAutomatically={false}
               />
               <View className="mt-8">
                 <Text className="text-base text-muted-foreground mb-4">
