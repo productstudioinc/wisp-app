@@ -207,7 +207,7 @@ export default function SettingsScreen() {
         Alert.alert('No Updates', 'You are running the latest version.');
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to check for updates. Please try again.');
+      Alert.alert('Error', `Failed to check for updates. Please try again. ${error}`);
       console.error(error);
     } finally {
       setIsCheckingForUpdate(false);
