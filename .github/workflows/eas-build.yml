@@ -34,8 +34,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build iOS app
-        run: eas build --platform ios --local --non-interactive --output ${{ github.workspace }}/app-release.ipa
+      - name: Trigger EAS Build
+        run: eas build --platform ios --profile release --non-interactive --auto-submit=false
+
+      - name: Get IPA URL
+        id: get-ipa-url
+        run: |
+          IPA_URL=$(eas build:list --json --limit=1 --platform=ios --non-interactive | jq -r '.[0].artifacts.buildUrl')
+          echo "IPA_URL=$IPA_URL" >> $GITHUB_ENV
+
+      - name: Download IPA
+        run: |
+          curl -L "$IPA_URL" --output ${{ github.workspace }}/app-release.ipa
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
