@@ -13,7 +13,7 @@ interface StepHeaderProps {
 export default function StepHeader({ step, hasGenerated, onReset }: StepHeaderProps) {
   return (
     <View className="h-14 mb-8 flex-row justify-between items-center">
-      <Text className="text-4xl font-bold text-foreground">
+      <Text className="text-2xl font-title text-foreground">
         {step === 0 ? 'Create a New App' : 'Personalize Your App'}
       </Text>
 
