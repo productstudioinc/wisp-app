@@ -128,8 +128,11 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
   );
 
   const handleNext = async () => {
-    if (step === 0 && (!formData.name || !formData.description)) {
-      return;
+    if (step === 0) {
+      if (!formData.name.trim() || !formData.description.trim()) {
+        Alert.alert('Required Fields', 'Please fill in both the app name and app idea fields.');
+        return;
+      }
     }
 
     setFormData((prev) => ({
@@ -287,7 +290,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
 
   const canContinue = () => {
     if (step === 0) {
-      return !!formData.name && !!formData.description;
+      return formData.name.trim().length > 0 && formData.description.trim().length > 0;
     }
     return true;
   };
