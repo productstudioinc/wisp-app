@@ -35,7 +35,7 @@ jobs:
         run: pnpm install
 
       - name: Trigger EAS Build
-        run: eas build --platform ios --profile release --non-interactive --auto-submit=false
+        run: eas build --platform ios --profile release --non-interactive
 
       - name: Get IPA URL
         id: get-ipa-url
