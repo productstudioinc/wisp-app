@@ -74,18 +74,18 @@ export default function FirstStep({
 
   const handleDescriptionSubmit = () => {
     const text = descriptionInputRef.current?.props.defaultValue as string;
-    if (text && text.trim()) {
-      onDescriptionChange(text.trim());
+    if (text !== undefined) {
+      onDescriptionChange(text);
     }
     descriptionInputRef.current?.blur();
   };
 
   const handleNameSubmit = () => {
     const text = nameInputRef.current?.props.defaultValue as string;
-    if (text && text.trim()) {
-      onNameChange(text.trim());
-      descriptionInputRef.current?.focus();
+    if (text !== undefined) {
+      onNameChange(text);
     }
+    descriptionInputRef.current?.focus();
   };
 
   const renderExampleIdeas = (
@@ -157,13 +157,8 @@ export default function FirstStep({
               <Input
                 ref={nameInputRef}
                 defaultValue={name}
-                onChangeText={(text) => onNameChange(text.trim())}
-                onEndEditing={(e) => {
-                  const text = e.nativeEvent.text.trim();
-                  if (text) {
-                    onNameChange(text);
-                  }
-                }}
+                onChangeText={onNameChange}
+                onEndEditing={(e) => onNameChange(e.nativeEvent.text)}
                 className="bg-transparent text-base py-4"
                 placeholder="Enter your app name"
                 returnKeyType="next"
@@ -179,13 +174,8 @@ export default function FirstStep({
               <Input
                 ref={descriptionInputRef}
                 defaultValue={description}
-                onChangeText={(text) => onDescriptionChange(text.trim())}
-                onEndEditing={(e) => {
-                  const text = e.nativeEvent.text.trim();
-                  if (text) {
-                    onDescriptionChange(text);
-                  }
-                }}
+                onChangeText={onDescriptionChange}
+                onEndEditing={(e) => onDescriptionChange(e.nativeEvent.text)}
                 multiline
                 bottomSheet
                 numberOfLines={4}
