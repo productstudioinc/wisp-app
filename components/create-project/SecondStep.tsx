@@ -40,22 +40,21 @@ export default function SecondStep({
           contentContainerStyle={{ paddingBottom: 150 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}>
-          <View className="space-y-8">
+          <View>
             <Text className="text-base text-muted-foreground mb-8">
               These questions are optional and help personalize your app generation
             </Text>
             {questions.map((q) => (
-              <View key={q.id}>
-                <Text className="text-xl font-medium mb-3">{q.question}</Text>
+              <View key={q.id} className="pb-4">
+                <Text className="text-base font-medium mb-2">{q.question}</Text>
                 <Input
                   defaultValue={q.answer}
                   onEndEditing={(e) => onQuestionAnswer(q.id, e.nativeEvent.text)}
-                  className="bg-transparent text-base py-4 min-h-[44px]"
+                  className="bg-transparent text-base"
                   placeholder="Your answer"
                   multiline
                   bottomSheet
                   textAlignVertical="top"
-                  style={{ paddingBottom: 12 }}
                 />
               </View>
             ))}

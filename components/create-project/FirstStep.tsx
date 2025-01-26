@@ -148,10 +148,10 @@ export default function FirstStep({
                   )}
                 </TouchableOpacity>
               </View>
-              <Text className="text-base text-muted-foreground mt-3">Choose an app icon</Text>
+              <Text className="text-base text-muted-foreground mt-3 mb-3">Choose an app icon</Text>
             </View>
             <View>
-              <Text className="text-xl font-medium mb-3">
+              <Text className="text-base font-medium mb-3">
                 App Name <Text className="text-red-500">*</Text>
               </Text>
               <Input
@@ -168,7 +168,7 @@ export default function FirstStep({
               />
             </View>
             <View>
-              <Text className="text-xl font-medium mb-3 pt-4">
+              <Text className="text-base font-medium mb-3 pt-4">
                 App Idea <Text className="text-red-500">*</Text>
               </Text>
               <Input

@@ -3,9 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import * as Updates from 'expo-updates';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Linking,
   Platform,
@@ -110,6 +112,7 @@ export default function SettingsScreen() {
   const responseListener = useRef<Notifications.EventSubscription>();
   const [devModeCount, setDevModeCount] = useState(0);
   const [devModeEnabled, setDevModeEnabled] = useState(false);
+  const [isCheckingForUpdate, setIsCheckingForUpdate] = useState(false);
 
   useEffect(() => {
     registerForPushNotificationsAsync()
@@ -177,6 +180,37 @@ export default function SettingsScreen() {
       router.replace('/(auth)/welcome');
     } catch (error) {
       Alert.alert('Error', 'Failed to delete account. Please try again.');
+    }
+  };
+
+  const checkForUpdates = async () => {
+    try {
+      setIsCheckingForUpdate(true);
+      const update = await Updates.checkForUpdateAsync();
+
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        Alert.alert(
+          'Update Available',
+          'A new update has been downloaded. Would you like to restart the app to apply it?',
+          [
+            { text: 'Later', style: 'cancel' },
+            {
+              text: 'Restart',
+              onPress: async () => {
+                await Updates.reloadAsync();
+              },
+            },
+          ],
+        );
+      } else {
+        Alert.alert('No Updates', 'You are running the latest version.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to check for updates. Please try again.');
+      console.error(error);
+    } finally {
+      setIsCheckingForUpdate(false);
     }
   };
 
@@ -251,6 +285,31 @@ export default function SettingsScreen() {
                     />
                   </View>
                 </View>
+              </View>
+            </View>
+
+            {/* Updates Section - Add this before the About section */}
+            <View className="mt-6 px-4">
+              <Text className="text-sm font-medium text-muted-foreground uppercase mb-2 px-4">
+                Updates
+              </Text>
+              <View className="backdrop-blur-md rounded-2xl overflow-hidden">
+                <TouchableOpacity
+                  disabled={isCheckingForUpdate}
+                  onPress={checkForUpdates}
+                  className="px-4 py-3.5 flex-row justify-between items-center">
+                  <View>
+                    <Text className="text-base font-medium text-foreground">Check for Updates</Text>
+                    <Text className="text-base text-muted-foreground mt-0.5">
+                      Current version: {Constants.expoConfig?.version}
+                    </Text>
+                  </View>
+                  {isCheckingForUpdate ? (
+                    <ActivityIndicator size="small" className="text-foreground" />
+                  ) : (
+                    <Text className="text-base text-primary">Check</Text>
+                  )}
+                </TouchableOpacity>
               </View>
             </View>
 
