@@ -164,6 +164,7 @@ export default function FirstStep({
                 returnKeyType="next"
                 blurOnSubmit={false}
                 bottomSheet
+                enablesReturnKeyAutomatically
                 onSubmitEditing={handleNameSubmit}
               />
             </View>
@@ -182,9 +183,9 @@ export default function FirstStep({
                 className="min-h-[120] py-4 px-4 bg-transparent text-base"
                 textAlignVertical="top"
                 placeholder="Describe your app idea"
-                returnKeyType="done"
-                blurOnSubmit={true}
-                onSubmitEditing={handleDescriptionSubmit}
+                returnKeyType="default"
+                blurOnSubmit={false}
+                enablesReturnKeyAutomatically={false}
               />
               <View className="mt-8">
                 <Text className="text-base text-muted-foreground mb-4">
