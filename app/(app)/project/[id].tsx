@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, Alert, ActionSheetIOS } from 'react-native';
+import { View, Text, Image, ScrollView, Alert, ActionSheetIOS, Animated } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatDistanceToNow } from 'date-fns';
@@ -6,7 +6,7 @@ import { ExternalLink } from '~/lib/icons/ExternalLink';
 import { TouchableOpacity } from 'react-native';
 import { shareUrl, openUrl, generateAPIUrl } from '~/lib/utils';
 import { supabase } from '~/supabase/client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Background } from '~/components/ui/background';
 import { ChevronLeft } from '~/lib/icons/ChevronLeft';
 import { Button } from '~/components/ui/button';
@@ -43,6 +43,12 @@ export default function ProjectDetails() {
   const router = useRouter();
   const [project, setProject] = useState<Project | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 20],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
 
   useEffect(() => {
     const fetchUserAndProject = async () => {
@@ -166,6 +172,15 @@ export default function ProjectDetails() {
               className="w-10 h-10 -ml-2 items-center justify-center">
               <ChevronLeft size={22} className="text-foreground" />
             </TouchableOpacity>
+            <Animated.View
+              className="flex-1 mx-4"
+              style={{
+                opacity: headerOpacity,
+              }}>
+              <Text className="text-base font-medium text-foreground text-center" numberOfLines={1}>
+                {project?.display_name}
+              </Text>
+            </Animated.View>
             <View className="flex-row items-center">
               <TouchableOpacity
                 onPress={handleShare}
@@ -184,10 +199,16 @@ export default function ProjectDetails() {
           </View>
         </View>
 
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 120 }}>
+        <Animated.ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 120 }}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+            useNativeDriver: true,
+          })}
+          scrollEventThrottle={16}>
           <View className="px-4 mb-6">
-            <View className="flex-row items-start">
-              <View className="w-24 h-24 rounded-[18px] bg-muted overflow-hidden shadow-lg">
+            <View className="flex-row">
+              <View className="w-[72px] h-[72px] rounded-[18px] bg-muted overflow-hidden shadow-lg">
                 {faviconUrl ? (
                   <Image
                     source={{ uri: faviconUrl }}
@@ -203,16 +224,16 @@ export default function ProjectDetails() {
                 )}
               </View>
 
-              <View className="flex-1 ml-4 pt-1">
-                <Text className="text-2xl font-title text-foreground mb-1" numberOfLines={2}>
+              <View className="flex-1 ml-4">
+                <Text className="text-lg font-title text-foreground" numberOfLines={2}>
                   {project.display_name}
                 </Text>
                 {isOwner && (
-                  <View className="flex-row items-center">
+                  <View className="flex-row items-center pt-2">
                     <View
-                      className={`w-2 h-2 rounded-full ${getStatusColor(project.status)} mr-2`}
+                      className={`w-2 h-2 rounded-full ${getStatusColor(project.status)} mr-1.5`}
                     />
-                    <Text className="text-base text-muted-foreground capitalize">
+                    <Text className="text-sm text-muted-foreground capitalize">
                       {project.status}
                     </Text>
                   </View>
@@ -234,13 +255,12 @@ export default function ProjectDetails() {
             <View className="mb-6">
               {project.description && (
                 <View className="px-4 mb-6">
-                  <Text className="text-xl font-semibold text-foreground mb-2">Description</Text>
+                  <Text className="text-base font-semibold text-foreground mb-2">Description</Text>
                   <Text className="text-base text-muted-foreground leading-[22px]">
                     {project.description}
                   </Text>
                 </View>
               )}
-              <Text className="text-xl font-semibold text-foreground mb-3 px-4">Preview</Text>
               <View className="px-4">
                 <View
                   className="w-[240px] aspect-[3/4] bg-muted rounded-3xl overflow-hidden shadow-2xl mx-auto"
@@ -271,7 +291,7 @@ export default function ProjectDetails() {
           )}
 
           <View className="px-4">
-            <Text className="text-xl font-semibold text-foreground mb-2">Information</Text>
+            <Text className="text-base font-semibold text-foreground mb-2">Information</Text>
             <View className="space-y-3">
               <View className="flex-row justify-between items-center">
                 <Text className="text-base text-muted-foreground">Created</Text>
@@ -290,13 +310,13 @@ export default function ProjectDetails() {
               )}
             </View>
           </View>
-        </ScrollView>
+        </Animated.ScrollView>
 
         <GradientBlur height={140}>
           <SafeAreaView edges={['bottom']} className="flex-1 justify-end">
             <View className="flex-row w-full px-4 pb-4">
               <Button
-                className="flex-1 flex-row items-center justify-center rounded-full h-14 border-2 border-primary/10"
+                className="flex-1 flex-row items-center justify-center rounded-full border-2 border-primary/10"
                 onPress={handleOpen}
                 disabled={!project?.custom_domain}>
                 <Text className="text-base font-semibold text-primary-foreground">Open</Text>
