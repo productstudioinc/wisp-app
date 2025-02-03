@@ -204,7 +204,7 @@ export default function ProjectDetails() {
               </View>
 
               <View className="flex-1 ml-4 pt-1">
-                <Text className="text-2xl font-title text-foreground mb-1" numberOfLines={2}>
+                <Text className="text-base font-title text-foreground mb-1" numberOfLines={2}>
                   {project.display_name}
                 </Text>
                 {isOwner && (
@@ -212,9 +212,7 @@ export default function ProjectDetails() {
                     <View
                       className={`w-2 h-2 rounded-full ${getStatusColor(project.status)} mr-2`}
                     />
-                    <Text className="text-base text-muted-foreground capitalize">
-                      {project.status}
-                    </Text>
+                    <Text className="text-muted-foreground capitalize">{project.status}</Text>
                   </View>
                 )}
               </View>
@@ -223,7 +221,7 @@ export default function ProjectDetails() {
 
           {project.prompt && (
             <View className="px-4 mb-6">
-              <Text className="text-xl font-semibold text-foreground mb-2">About</Text>
+              <Text className="text-base font-semibold text-foreground mb-2">About</Text>
               <Text className="text-base text-muted-foreground leading-[22px]">
                 {project.prompt}
               </Text>
@@ -234,7 +232,7 @@ export default function ProjectDetails() {
             <View className="mb-6">
               {project.description && (
                 <View className="px-4 mb-6">
-                  <Text className="text-xl font-semibold text-foreground mb-2">Description</Text>
+                  <Text className="text-base font-semibold text-foreground mb-2">Description</Text>
                   <Text className="text-base text-muted-foreground leading-[22px]">
                     {project.description}
                   </Text>
@@ -271,7 +269,7 @@ export default function ProjectDetails() {
           )}
 
           <View className="px-4">
-            <Text className="text-xl font-semibold text-foreground mb-2">Information</Text>
+            <Text className="text-base font-semibold text-foreground mb-2">Information</Text>
             <View className="space-y-3">
               <View className="flex-row justify-between items-center">
                 <Text className="text-base text-muted-foreground">Created</Text>
