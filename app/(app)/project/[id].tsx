@@ -238,7 +238,7 @@ export default function ProjectDetails() {
                   </Text>
                 </View>
               )}
-              <Text className="text-xl font-semibold text-foreground mb-3 px-4">Preview</Text>
+              <Text className="text-base font-semibold text-foreground mb-3 px-4">Preview</Text>
               <View className="px-4">
                 <View
                   className="w-[240px] aspect-[3/4] bg-muted rounded-3xl overflow-hidden shadow-2xl mx-auto"
