@@ -21,8 +21,7 @@ import { Button } from '~/components/ui/button';
 import { Background } from '~/components/ui/background';
 import { formatDistanceToNow } from 'date-fns';
 import { useRouter } from 'expo-router';
-import { Project, ProjectStatus, projectsState, projectsActions } from '~/lib/stores/projects';
-import { observer } from '@legendapp/state/react';
+import { Project, ProjectStatus, useProjectsStore, projectsActions } from '~/lib/stores/projects';
 
 const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
   const router = useRouter();
@@ -31,14 +30,14 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
   const pulseAnim = useSharedValue(0);
 
   useEffect(() => {
-    if (project.status === 'creating') {
+    if (project.status === 'deployed' || project.status === 'failed') {
+      pulseAnim.value = 0;
+    } else {
       pulseAnim.value = withRepeat(
         withSequence(withTiming(1, { duration: 1000 }), withTiming(0, { duration: 1000 })),
         -1, // Infinite repetition
         true, // Reverse animation
       );
-    } else {
-      pulseAnim.value = 0;
     }
   }, [project.status]);
 
@@ -51,16 +50,13 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
   });
 
   const getStatusColor = (status: ProjectStatus) => {
-    switch (status) {
-      case 'deployed':
-        return 'bg-green-500';
-      case 'creating':
-        return 'bg-yellow-500';
-      case 'deploying':
-        return 'bg-blue-500';
-      default:
-        return 'bg-red-500';
+    if (status === 'deployed') {
+      return 'bg-green-500';
     }
+    if (status === 'failed') {
+      return 'bg-red-500';
+    }
+    return 'bg-yellow-500';
   };
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -95,7 +91,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
         className="bg-card/80 backdrop-blur-md rounded-2xl py-4 px-4 mb-3 border border-border">
         <View className="flex-row items-start">
           <View className="w-11 h-11 rounded-xl bg-muted mr-3 overflow-hidden">
-            {faviconUrl ? (
+            {faviconUrl && project.status === 'deployed' ? (
               <Image source={{ uri: faviconUrl }} className="w-full h-full" />
             ) : (
               <View className="w-full h-full bg-secondary items-center justify-center">
@@ -113,7 +109,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
               </Text>
               <Animated.View
                 className={`w-2 h-2 rounded-full ${getStatusColor(project.status)}`}
-                style={project.status === 'creating' ? dotAnimatedStyle : undefined}
+                style={project.status === 'pending' ? dotAnimatedStyle : undefined}
               />
             </View>
 
@@ -139,12 +135,10 @@ const EmptyState = () => (
   </View>
 );
 
-const HomeScreen = observer(() => {
+const HomeScreen = () => {
   const [presentCreateProject, setPresentCreateProject] = useState<(() => void) | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const projects = projectsState.projects.get();
-  const isLoading = projectsState.isLoading.get();
-  const error = projectsState.error.get();
+  const { projects, isLoading, error } = useProjectsStore();
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -212,6 +206,6 @@ const HomeScreen = observer(() => {
       </SafeAreaView>
     </Background>
   );
-});
+};
 
 export default HomeScreen;

@@ -15,6 +15,7 @@ import FirstStep from './create-project/FirstStep';
 import SecondStep from './create-project/SecondStep';
 import StepFooter from './create-project/StepFooter';
 import LoadingStep from './create-project/LoadingStep';
+import { projectsActions } from '~/lib/stores/projects';
 
 interface Question {
   id: string;
@@ -231,6 +232,31 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
 
+      // Create optimistic project
+      const optimisticProject = {
+        id: crypto.randomUUID(),
+        name: formData.name,
+        display_name: formData.name,
+        description: formData.description,
+        user_id: userData.user.id,
+        project_id: '',
+        status: 'pending' as const,
+        created_at: new Date().toISOString(),
+        custom_domain: null,
+        dns_record_id: null,
+        prompt: null,
+        status_message: null,
+        last_updated: null,
+        error: null,
+        deployed_at: null,
+        private: false,
+        icon: formData.icon,
+        mobile_screenshot: null,
+      };
+
+      // Add optimistic project to store
+      projectsActions.optimisticAddProject(optimisticProject);
+
       const form = new FormData();
       form.append('name', formData.name);
       form.append('description', formData.description);
@@ -269,6 +295,8 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       });
 
       if (!response.ok) {
+        // Remove optimistic project on error
+        projectsActions.optimisticRemoveProject(optimisticProject.id);
         throw new Error('Failed to create project');
       }
 

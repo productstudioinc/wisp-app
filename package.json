@@ -43,6 +43,7 @@
     "@supabase/supabase-js": "^2.47.10",
     "@superwall/react-native-superwall": "^1.4.4",
     "@tabler/icons-react-native": "^3.28.1",
+    "@types/uuid": "^10.0.0",
     "ai": "^4.0.36",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
