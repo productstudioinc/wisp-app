@@ -12,7 +12,7 @@ interface StepHeaderProps {
 
 export default function StepHeader({ step, hasGenerated, onReset }: StepHeaderProps) {
   return (
-    <View className="h-14 mb-8 flex-row justify-between items-center">
+    <View className={`h-14 flex-row justify-between items-center ${step === 0 ? 'mb-8' : ''}`}>
       <Text className="text-2xl font-title text-foreground">
         {step === 0 ? 'Create a New App' : 'Personalize Your App'}
       </Text>

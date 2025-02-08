@@ -32,4 +32,4 @@ jobs:
         run: pnpm install
 
       - name: 🚀 Create update
-        run: eas update --auto --non-interactive --branch "production"
+        run: eas update --auto
