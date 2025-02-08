@@ -1,9 +1,11 @@
 import { supabase } from '@/supabase/client';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { useRouter } from 'expo-router';
 import { Platform, View, useColorScheme } from 'react-native';
 
 export function Auth() {
   const colorScheme = useColorScheme();
+  const router = useRouter();
 
   if (Platform.OS === 'ios')
     return (
@@ -36,7 +38,8 @@ export function Auth() {
                 });
                 console.log(JSON.stringify({ error, user }, null, 2));
                 if (!error) {
-                  // User is signed in.
+                  // Navigate to onboarding after successful sign in
+                  router.replace('/onboarding');
                 }
               } else {
                 throw new Error('No identityToken.');

@@ -1,20 +1,20 @@
+import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Text, View, ScrollView, TouchableOpacity, Image, RefreshControl } from 'react-native';
+import { Image, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import Animated, {
+  Easing,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Background } from '~/components/ui/background';
 import { supabase } from '~/supabase/client';
-import Animated, {
-  useAnimatedStyle,
-  withSpring,
-  withRepeat,
-  withSequence,
-  withTiming,
-  Easing,
-  interpolate,
-  useSharedValue,
-} from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
 
 type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
 
@@ -86,7 +86,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
             </View>
 
             <View className="flex-1">
-              <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
+              <Text className="text-base font-semibold text-foreground">
                 {project.display_name}
               </Text>
             </View>
@@ -214,10 +214,21 @@ export default function DiscoverScreen() {
                 flexGrow: 0,
               }}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-              <View>
-                {projects.map((project, index) => (
-                  <ProjectCard key={project.id} project={project} index={index} />
-                ))}
+              <View className="flex-row flex-wrap">
+                <View className="w-1/2 px-2">
+                  {projects
+                    .filter((_, index) => index % 2 === 0)
+                    .map((project, index) => (
+                      <ProjectCard key={project.id} project={project} index={index * 2} />
+                    ))}
+                </View>
+                <View className="w-1/2 px-2">
+                  {projects
+                    .filter((_, index) => index % 2 === 1)
+                    .map((project, index) => (
+                      <ProjectCard key={project.id} project={project} index={index * 2 + 1} />
+                    ))}
+                </View>
               </View>
             </ScrollView>
           ) : (

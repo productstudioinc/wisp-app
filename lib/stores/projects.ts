@@ -1,14 +1,16 @@
-import { observable } from '@legendapp/state';
+import { create } from 'zustand';
 import { supabase } from '~/supabase/client';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
-export type ProjectStatus = 'creating' | 'deployed' | 'failed' | 'deploying';
+export type ProjectStatus = 'pending' | 'deployed' | 'failed';
 
 export interface Project {
   id: string;
   name: string;
-  display_name: string;
   user_id: string;
   project_id: string;
+  display_name: string;
+  description: string;
   dns_record_id: string | null;
   custom_domain: string | null;
   prompt: string | null;
@@ -20,95 +22,121 @@ export interface Project {
   deployed_at: string | null;
   private: boolean;
   icon: string | null;
+  mobile_screenshot: string | null;
 }
 
 interface ProjectsState {
   projects: Project[];
   isLoading: boolean;
   error: string | null;
+  realtimeChannel: RealtimeChannel | null;
+  // Actions
+  setProjects: (projects: Project[]) => void;
+  addProject: (project: Project) => void;
+  updateProject: (id: string, updates: Partial<Project>) => void;
+  removeProject: (id: string) => void;
+  setIsLoading: (isLoading: boolean) => void;
+  setError: (error: string | null) => void;
+  setRealtimeChannel: (channel: RealtimeChannel | null) => void;
 }
 
-export const projectsState = observable<ProjectsState>({
+export const useProjectsStore = create<ProjectsState>((set, get) => ({
   projects: [],
   isLoading: false,
   error: null,
-});
+  realtimeChannel: null,
+  setProjects: (projects) => set({ projects }),
+  addProject: (project) => set((state) => ({ 
+    projects: [...state.projects, project] 
+  })),
+  updateProject: (id, updates) => set((state) => ({
+    projects: state.projects.map((project) =>
+      project.id === id ? { ...project, ...updates } : project
+    ),
+  })),
+  removeProject: (id) => set((state) => ({
+    projects: state.projects.filter((project) => project.id !== id),
+  })),
+  setIsLoading: (isLoading) => set({ isLoading }),
+  setError: (error) => set({ error }),
+  setRealtimeChannel: (channel) => set({ realtimeChannel: channel }),
+}));
 
+// Actions
 export const projectsActions = {
-  async fetchProjects() {
+  fetchProjects: async () => {
+    const store = useProjectsStore.getState();
     try {
-      projectsState.isLoading.set(true);
-      projectsState.error.set(null);
+      store.setIsLoading(true);
+      store.setError(null);
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('No user found');
-      }
-
-      const { data, error } = await supabase
+      const { data: projects, error } = await supabase
         .from('projects')
         .select('*')
-        .eq('user_id', user.id);
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-
-      projectsState.projects.set(data || []);
+      store.setProjects(projects || []);
     } catch (error) {
-      projectsState.error.set(error instanceof Error ? error.message : 'Failed to fetch projects');
+      console.error('Error fetching projects:', error);
+      store.setError(error instanceof Error ? error.message : 'Failed to fetch projects');
     } finally {
-      projectsState.isLoading.set(false);
+      store.setIsLoading(false);
     }
   },
 
-  setupRealtimeSubscription() {
-    let userId: string | null = null;
-
-    // Get initial user ID
-    supabase.auth.getUser().then(({ data }) => {
-      userId = data.user?.id ?? null;
-    });
-
-    // Listen for auth changes
-    supabase.auth.onAuthStateChange((_event, session) => {
-      userId = session?.user?.id ?? null;
-    });
+  setupRealtimeSubscription: () => {
+    const store = useProjectsStore.getState();
+    
+    // Clean up existing subscription if any
+    if (store.realtimeChannel) {
+      supabase.removeChannel(store.realtimeChannel);
+    }
 
     const channel = supabase
-      .channel('projects-channel')
+      .channel('projects_realtime')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'projects',
-          filter: userId ? `user_id=eq.${userId}` : undefined,
         },
         (payload) => {
-          const currentProjects = projectsState.projects.get();
-
-          switch (payload.eventType) {
-            case 'INSERT':
-              projectsState.projects.set([...currentProjects, payload.new as Project]);
-              break;
-            case 'UPDATE':
-              projectsState.projects.set(
-                currentProjects.map((project) =>
-                  project.id === payload.new.id ? (payload.new as Project) : project,
-                ),
-              );
-              break;
-            case 'DELETE':
-              projectsState.projects.set(
-                currentProjects.filter((project) => project.id !== payload.old.id),
-              );
-              break;
+          if (payload.eventType === 'INSERT') {
+            const newProject = payload.new as Project;
+            // Only add if not already in store (prevents duplication with optimistic updates)
+            if (!store.projects.some(p => p.id === newProject.id)) {
+              store.addProject(newProject);
+            }
+          } else if (payload.eventType === 'UPDATE') {
+            store.updateProject(payload.new.id, payload.new as Project);
+          } else if (payload.eventType === 'DELETE') {
+            store.removeProject(payload.old.id);
           }
         },
       )
       .subscribe();
 
+    store.setRealtimeChannel(channel);
+
     return () => {
-      channel.unsubscribe();
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
+  },
+
+  // Optimistic update helpers
+  optimisticAddProject: (project: Project) => {
+    useProjectsStore.getState().addProject(project);
+  },
+
+  optimisticUpdateProject: (id: string, updates: Partial<Project>) => {
+    useProjectsStore.getState().updateProject(id, updates);
+  },
+
+  optimisticRemoveProject: (id: string) => {
+    useProjectsStore.getState().removeProject(id);
   },
 }; 

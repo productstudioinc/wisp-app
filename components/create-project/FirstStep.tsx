@@ -13,6 +13,7 @@ import { Upload } from '~/lib/icons/Upload';
 import { Image } from 'expo-image';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { Button } from '../ui/button';
+import { Textarea } from '../ui/textarea';
 
 const EXAMPLE_IDEAS = [
   {
@@ -127,9 +128,9 @@ export default function FirstStep({
           contentContainerStyle={{ paddingBottom: 150 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}>
-          <View className="space-y-12">
+          <View className="gap-y-4">
             <View className="items-center">
-              <View className="flex-row space-x-4">
+              <View className="flex-row gap-x-4">
                 <TouchableOpacity
                   onPress={onPickImage}
                   className="w-24 h-24 rounded-2xl bg-muted justify-center items-center overflow-hidden border-2 border-dashed border-border">
@@ -141,17 +142,17 @@ export default function FirstStep({
                       transition={200}
                     />
                   ) : (
-                    <View className="items-center space-y-2">
+                    <View className="items-center gap-y-2">
                       <Upload size={24} className="text-muted-foreground" />
                       <Text className="text-base text-muted-foreground">Upload</Text>
                     </View>
                   )}
                 </TouchableOpacity>
               </View>
-              <Text className="text-base text-muted-foreground mt-3 mb-3">Choose an app icon</Text>
+              <Text className="text-base text-muted-foreground mt-3">Choose an app icon</Text>
             </View>
-            <View>
-              <Text className="text-base font-medium mb-3">
+            <View className="gap-y-3">
+              <Text className="text-base font-medium">
                 App Name <Text className="text-red-500">*</Text>
               </Text>
               <Input
@@ -159,7 +160,6 @@ export default function FirstStep({
                 defaultValue={name}
                 onChangeText={onNameChange}
                 onEndEditing={(e) => onNameChange(e.nativeEvent.text)}
-                className="bg-transparent text-base py-4"
                 placeholder="Enter your app name"
                 returnKeyType="next"
                 blurOnSubmit={false}
@@ -168,11 +168,11 @@ export default function FirstStep({
                 onSubmitEditing={handleNameSubmit}
               />
             </View>
-            <View>
-              <Text className="text-base font-medium mb-3 pt-4">
+            <View className="gap-y-3">
+              <Text className="text-base font-medium">
                 App Idea <Text className="text-red-500">*</Text>
               </Text>
-              <Input
+              <Textarea
                 ref={descriptionInputRef}
                 defaultValue={description}
                 onChangeText={onDescriptionChange}
@@ -180,15 +180,14 @@ export default function FirstStep({
                 multiline
                 bottomSheet
                 numberOfLines={4}
-                className="min-h-[120] py-4 px-4 bg-transparent text-base"
                 textAlignVertical="top"
                 placeholder="Describe your app idea"
                 returnKeyType="default"
                 blurOnSubmit={false}
                 enablesReturnKeyAutomatically={false}
               />
-              <View className="mt-8">
-                <Text className="text-base text-muted-foreground mb-4">
+              <View className="mt-2 gap-y-3">
+                <Text className="text-base text-muted-foreground">
                   Or try one of these examples:
                 </Text>
                 {renderExampleIdeas}
