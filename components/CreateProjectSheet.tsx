@@ -16,6 +16,7 @@ import SecondStep from './create-project/SecondStep';
 import StepFooter from './create-project/StepFooter';
 import LoadingStep from './create-project/LoadingStep';
 import { projectsActions } from '~/lib/stores/projects';
+import * as Crypto from 'expo-crypto';
 
 interface Question {
   id: string;
@@ -234,7 +235,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
 
       // Create optimistic project
       const optimisticProject = {
-        id: crypto.randomUUID(),
+        id: Crypto.randomUUID(),
         name: formData.name,
         display_name: formData.name,
         description: formData.description,
