@@ -291,7 +291,7 @@ export default function ProjectDetails() {
                     />
                     <Text className="text-muted-foreground capitalize">
                       {project.status === 'deployed'
-                        ? 'Deployed'
+                        ? 'Ready'
                         : project.status === 'failed'
                           ? 'Failed'
                           : 'Preparing'}
