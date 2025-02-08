@@ -186,29 +186,39 @@ export default function SettingsScreen() {
   const checkForUpdates = async () => {
     try {
       setIsCheckingForUpdate(true);
+
+      if (__DEV__) {
+        Alert.alert('Development Mode', 'Updates are disabled in development mode.');
+        return;
+      }
+
       const update = await Updates.checkForUpdateAsync();
 
       if (update.isAvailable) {
         await Updates.fetchUpdateAsync();
+
         Alert.alert(
           'Update Available',
-          'A new update has been downloaded. Would you like to restart the app to apply it?',
+          'A new update has been downloaded. The app needs to restart to apply the changes.',
           [
-            { text: 'Later', style: 'cancel' },
             {
-              text: 'Restart',
+              text: 'Restart Now',
               onPress: async () => {
                 await Updates.reloadAsync();
               },
             },
           ],
+          { cancelable: false },
         );
       } else {
-        Alert.alert('No Updates', 'You are running the latest version.');
+        Alert.alert('Up to Date', 'You are running the latest version.');
       }
     } catch (error) {
-      Alert.alert('Error', `Failed to check for updates. Please try again. ${error}`);
-      console.error(error);
+      console.error('Update error:', error);
+      Alert.alert(
+        'Update Error',
+        'Failed to check for updates. Please ensure you have an internet connection and try again.',
+      );
     } finally {
       setIsCheckingForUpdate(false);
     }
