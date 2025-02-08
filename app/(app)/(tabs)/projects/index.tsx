@@ -107,23 +107,14 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
               <Text className="text-base font-semibold text-foreground mr-2" numberOfLines={1}>
                 {project.display_name}
               </Text>
-              <View className="flex-row items-center">
-                <Animated.View
-                  className={`w-2 h-2 rounded-full ${getStatusColor(project.status)}`}
-                  style={
-                    project.status === 'deployed' || project.status === 'failed'
-                      ? undefined
-                      : dotAnimatedStyle
-                  }
-                />
-                <Text className="text-sm text-muted-foreground ml-1.5 capitalize">
-                  {project.status === 'deployed'
-                    ? 'Ready'
-                    : project.status === 'failed'
-                      ? 'Failed'
-                      : 'Preparing'}
-                </Text>
-              </View>
+              <Animated.View
+                className={`w-2 h-2 rounded-full ${getStatusColor(project.status)}`}
+                style={
+                  project.status === 'deployed' || project.status === 'failed'
+                    ? undefined
+                    : dotAnimatedStyle
+                }
+              />
             </View>
 
             {project.created_at && (
