@@ -384,7 +384,7 @@ export default function ProjectDetails() {
                 onPress={() => presentEditSheet.current?.()}
                 disabled={!isOwner || project.status !== 'deployed'}>
                 <Text
-                  className={`text-base font-semibold leading-[22px] ${
+                  className={`text-lg font-semibold leading-[22px] ${
                     !isOwner || project.status !== 'deployed'
                       ? 'text-muted-foreground'
                       : 'text-primary'
@@ -402,7 +402,7 @@ export default function ProjectDetails() {
                 onPress={handleOpen}
                 disabled={!project?.custom_domain || project.status !== 'deployed'}>
                 <Text
-                  className={`text-base font-semibold leading-[22px] ${
+                  className={`text-lg font-semibold leading-[22px] ${
                     !project?.custom_domain || project.status !== 'deployed'
                       ? 'text-muted-foreground'
                       : 'text-primary-foreground'

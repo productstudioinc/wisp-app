@@ -242,7 +242,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
                   onPress={handleSubmit}
                   disabled={!canSubmit()}>
                   <Text
-                    className={`text-center text-base font-semibold ${
+                    className={`text-center text-lg font-semibold ${
                       canSubmit() ? 'text-primary-foreground' : 'text-muted-foreground'
                     }`}>
                     Create Project
