@@ -3,7 +3,6 @@ import { View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Input } from '~/components/ui/input';
 import ImageStack from './ImageStack';
-import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 
 interface Question {
   id: string;
@@ -29,10 +28,7 @@ export default function SecondStep({
   onAddImages,
 }: SecondStepProps) {
   return (
-    <Animated.View
-      className="flex-1"
-      entering={SlideInRight.duration(300)}
-      exiting={SlideOutLeft.duration(300)}>
+    <View className="flex-1">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1">
@@ -78,6 +74,6 @@ export default function SecondStep({
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </Animated.View>
+    </View>
   );
 }

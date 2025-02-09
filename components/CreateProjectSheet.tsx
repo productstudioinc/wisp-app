@@ -17,6 +17,8 @@ import StepFooter from './create-project/StepFooter';
 import LoadingStep from './create-project/LoadingStep';
 import { projectsActions } from '~/lib/stores/projects';
 import * as Crypto from 'expo-crypto';
+import { PageTransition } from './create-project/PageTransition';
+import { withTiming } from 'react-native-reanimated';
 
 interface Question {
   id: string;
@@ -129,6 +131,15 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     }, []),
   );
 
+  const pageTransitionValue = useSharedValue(0);
+
+  const goToStep = (newStep: number) => {
+    pageTransitionValue.value = withTiming(newStep, {
+      duration: 200,
+    });
+    setStep(newStep);
+  };
+
   const handleNext = async () => {
     if (step === 0 && (!formData.name || !formData.description)) {
       return;
@@ -144,6 +155,7 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     if (!hasGenerated) {
       Superwall.shared.register('CreateStep1', undefined, undefined, async () => {
         setIsTransitioning(true);
+        goToStep(1.5); // Show loading step
         setFirstPageSnapshot({
           name: formData.name,
           description: formData.description,
@@ -178,24 +190,22 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
           }));
 
           setIsTransitioning(false);
-          setStep(1);
+          goToStep(2);
           setHasGenerated(true);
-          progress.value = 1;
         } catch (error) {
           console.error('Error refining project:', error);
           setIsTransitioning(false);
+          goToStep(0);
         }
       });
     } else {
       // Already generated before, just navigate
-      setStep(1);
-      progress.value = 1;
+      goToStep(2);
     }
   };
 
   const handleBack = () => {
-    setStep(0);
-    progress.value = 0;
+    goToStep(0);
   };
 
   const resetForm = () => {
@@ -426,10 +436,12 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       }}>
       <BottomSheetView style={{ flex: 1 }} className="pt-4">
         <View className="flex-1 px-6">
-          <StepHeader step={step} hasGenerated={hasGenerated} onReset={handleReset} />
+          {step !== 1.5 && (
+            <StepHeader step={step} hasGenerated={hasGenerated} onReset={handleReset} />
+          )}
 
-          {!isTransitioning ? (
-            step === 0 ? (
+          <View style={{ flex: 1 }}>
+            <PageTransition isActive={step === 0} transitionValue={pageTransitionValue} index={0}>
               <FirstStep
                 name={formData.name}
                 description={formData.description}
@@ -440,7 +452,16 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
                 }
                 onPickImage={pickImage}
               />
-            ) : (
+            </PageTransition>
+
+            <PageTransition
+              isActive={step === 1.5}
+              transitionValue={pageTransitionValue}
+              index={1.5}>
+              <LoadingStep isImageLoaded={isImageLoaded} />
+            </PageTransition>
+
+            <PageTransition isActive={step === 2} transitionValue={pageTransitionValue} index={2}>
               <SecondStep
                 questions={formData.questions}
                 imagesDescription={formData.imagesDescription}
@@ -451,10 +472,8 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
                 }
                 onAddImages={pickMultipleImages}
               />
-            )
-          ) : (
-            <LoadingStep isImageLoaded={isImageLoaded} />
-          )}
+            </PageTransition>
+          </View>
 
           {!isTransitioning && (
             <StepFooter
