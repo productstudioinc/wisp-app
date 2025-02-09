@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState, useMemo, useEffect } from 'react';
-import { View, Alert, Platform, Keyboard } from 'react-native';
+import { View, Alert, Platform, Keyboard, Text } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSharedValue } from 'react-native-reanimated';
@@ -12,47 +12,17 @@ import * as ImagePicker from 'expo-image-picker';
 import Superwall from '@superwall/react-native-superwall';
 import StepHeader from './create-project/StepHeader';
 import FirstStep from './create-project/FirstStep';
-import SecondStep from './create-project/SecondStep';
-import StepFooter from './create-project/StepFooter';
 import LoadingStep from './create-project/LoadingStep';
-import { projectsActions } from '~/lib/stores/projects';
 import * as Crypto from 'expo-crypto';
-import { PageTransition } from './create-project/PageTransition';
 import { withTiming } from 'react-native-reanimated';
-
-interface Question {
-  id: string;
-  question: string;
-  answer: string;
-}
+import { Button } from './ui/button';
 
 interface CreateProjectFormData {
   name: string;
   description: string;
   icon: string | null;
   isGeneratingIcon: boolean;
-  questions: Question[];
-  imagesDescription: string[];
-  imageSuggestions: string;
 }
-
-const INITIAL_QUESTIONS = [
-  {
-    id: '1',
-    question: 'Who is your target audience?',
-    answer: '',
-  },
-  {
-    id: '2',
-    question: 'What are the most important features you need?',
-    answer: '',
-  },
-  {
-    id: '3',
-    question: 'What inspired this app idea?',
-    answer: '',
-  },
-];
 
 interface CreateProjectSheetProps {
   onPresentRef?: (present: () => void) => void;
@@ -60,7 +30,6 @@ interface CreateProjectSheetProps {
 
 export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [formData, setFormData] = useState<CreateProjectFormData>({
@@ -68,20 +37,9 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     description: '',
     icon: null,
     isGeneratingIcon: false,
-    questions: INITIAL_QUESTIONS,
-    imagesDescription: [],
-    imageSuggestions: '',
   });
   const progress = useSharedValue(0);
   const { colorScheme } = useColorScheme();
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [hasGenerated, setHasGenerated] = useState(false);
-  const [shouldRegenerate, setShouldRegenerate] = useState(false);
-
-  const [firstPageSnapshot, setFirstPageSnapshot] = useState({
-    name: '',
-    description: '',
-  });
 
   const snapPoints = useMemo(() => ['80%'], []);
 
@@ -131,100 +89,13 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     }, []),
   );
 
-  const pageTransitionValue = useSharedValue(0);
-
-  const goToStep = (newStep: number) => {
-    pageTransitionValue.value = withTiming(newStep, {
-      duration: 200,
-    });
-    setStep(newStep);
-  };
-
-  const handleNext = async () => {
-    if (step === 0 && (!formData.name || !formData.description)) {
-      return;
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      questions: INITIAL_QUESTIONS,
-      imagesDescription: [],
-      imageSuggestions: '',
-    }));
-
-    if (!hasGenerated) {
-      Superwall.shared.register('CreateStep1', undefined, undefined, async () => {
-        setIsTransitioning(true);
-        goToStep(1.5); // Show loading step
-        setFirstPageSnapshot({
-          name: formData.name,
-          description: formData.description,
-        });
-
-        try {
-          const response = await fetch(generateAPIUrl('/api/refine'), {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              name: formData.name,
-              description: formData.description,
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to refine project');
-          }
-
-          const data = await response.json();
-
-          setFormData((prev) => ({
-            ...prev,
-            questions: data.questions.map((question: string, index: number) => ({
-              id: (index + 1).toString(),
-              question,
-              answer: '',
-            })),
-            imageSuggestions: data.imageSuggestions,
-          }));
-
-          setIsTransitioning(false);
-          goToStep(2);
-          setHasGenerated(true);
-        } catch (error) {
-          console.error('Error refining project:', error);
-          setIsTransitioning(false);
-          goToStep(0);
-        }
-      });
-    } else {
-      // Already generated before, just navigate
-      goToStep(2);
-    }
-  };
-
-  const handleBack = () => {
-    goToStep(0);
-  };
-
   const resetForm = () => {
-    setStep(0);
-    setHasGenerated(false);
-    setShouldRegenerate(true);
     progress.value = 0;
-    setFirstPageSnapshot({
-      name: '',
-      description: '',
-    });
     setFormData({
       name: '',
       description: '',
       icon: null,
       isGeneratingIcon: false,
-      questions: INITIAL_QUESTIONS,
-      imagesDescription: [],
-      imageSuggestions: '',
     });
   };
 
@@ -236,57 +107,13 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
         throw new Error('Project name must be 100 characters or less');
       }
 
-      const additionalInfo = formData.questions
-        .map((q: Question) => `Q: ${q.question}\nA: ${q.answer}`)
-        .join('\n\n');
-
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
-
-      // Create optimistic project
-      const optimisticProject = {
-        id: Crypto.randomUUID(),
-        name: formData.name,
-        display_name: formData.name,
-        description: formData.description,
-        user_id: userData.user.id,
-        project_id: '',
-        status: 'pending' as const,
-        created_at: new Date().toISOString(),
-        custom_domain: null,
-        dns_record_id: null,
-        prompt: null,
-        status_message: null,
-        last_updated: null,
-        error: null,
-        deployed_at: null,
-        private: false,
-        icon: formData.icon,
-        mobile_screenshot: null,
-      };
-
-      // Add optimistic project to store
-      projectsActions.optimisticAddProject(optimisticProject);
 
       const form = new FormData();
       form.append('name', formData.name);
       form.append('description', formData.description);
       form.append('userId', userData.user.id);
-      form.append('additionalInfo', additionalInfo);
-
-      if (formData.imagesDescription.length > 0) {
-        for (let i = 0; i < formData.imagesDescription.length; i++) {
-          const uri = formData.imagesDescription[i];
-          const name = uri.split('/').pop() || `image${i}.jpg`;
-          const type = 'image/jpeg';
-
-          form.append('images', {
-            uri,
-            name,
-            type,
-          } as any);
-        }
-      }
 
       if (formData.icon) {
         const iconName = formData.icon.split('/').pop() || 'icon.jpg';
@@ -306,8 +133,6 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       });
 
       if (!response.ok) {
-        // Remove optimistic project on error
-        projectsActions.optimisticRemoveProject(optimisticProject.id);
         throw new Error('Failed to create project');
       }
 
@@ -324,46 +149,8 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     }
   };
 
-  const canContinue = () => {
-    if (step === 0) {
-      return !!formData.name && !!formData.description;
-    }
-    return true;
-  };
-
-  const handleReset = () => {
-    Alert.alert(
-      'Are you sure you want to reset?',
-      'This will reset your app idea and your personalized questions',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: resetForm,
-        },
-      ],
-    );
-  };
-
-  const pickMultipleImages = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images',
-      allowsMultipleSelection: true,
-      selectionLimit: 10,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const newImages = result.assets.map((asset) => asset.uri);
-      setFormData((prev) => ({
-        ...prev,
-        imagesDescription: [...prev.imagesDescription, ...newImages].slice(0, 5),
-      }));
-    }
+  const canSubmit = () => {
+    return !!formData.name && !!formData.description;
   };
 
   // Load saved form data
@@ -407,13 +194,6 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
     loadWandImage();
   }, []);
 
-  const handleQuestionAnswer = (id: string, answer: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      questions: prev.questions.map((q) => (q.id === id ? { ...q, answer } : q)),
-    }));
-  };
-
   return (
     <BottomSheetModal
       ref={bottomSheetModalRef}
@@ -436,56 +216,41 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
       }}>
       <BottomSheetView style={{ flex: 1 }} className="pt-4">
         <View className="flex-1 px-6">
-          {step !== 1.5 && (
-            <StepHeader step={step} hasGenerated={hasGenerated} onReset={handleReset} />
-          )}
+          <StepHeader step={0} hasGenerated={false} onReset={() => resetForm()} />
 
           <View style={{ flex: 1 }}>
-            <PageTransition isActive={step === 0} transitionValue={pageTransitionValue} index={0}>
-              <FirstStep
-                name={formData.name}
-                description={formData.description}
-                icon={formData.icon}
-                onNameChange={(text) => setFormData((prev) => ({ ...prev, name: text }))}
-                onDescriptionChange={(text) =>
-                  setFormData((prev) => ({ ...prev, description: text }))
-                }
-                onPickImage={pickImage}
-              />
-            </PageTransition>
-
-            <PageTransition
-              isActive={step === 1.5}
-              transitionValue={pageTransitionValue}
-              index={1.5}>
-              <LoadingStep isImageLoaded={isImageLoaded} />
-            </PageTransition>
-
-            <PageTransition isActive={step === 2} transitionValue={pageTransitionValue} index={2}>
-              <SecondStep
-                questions={formData.questions}
-                imagesDescription={formData.imagesDescription}
-                imageSuggestions={formData.imageSuggestions}
-                onQuestionAnswer={handleQuestionAnswer}
-                onImagesChange={(newImages) =>
-                  setFormData((prev) => ({ ...prev, imagesDescription: newImages }))
-                }
-                onAddImages={pickMultipleImages}
-              />
-            </PageTransition>
+            <FirstStep
+              name={formData.name}
+              description={formData.description}
+              icon={formData.icon}
+              onNameChange={(text) => setFormData((prev) => ({ ...prev, name: text }))}
+              onDescriptionChange={(text) =>
+                setFormData((prev) => ({ ...prev, description: text }))
+              }
+              onPickImage={pickImage}
+            />
           </View>
 
-          {!isTransitioning && (
-            <StepFooter
-              step={step}
-              progress={progress}
-              isLoading={isLoading}
-              hasGenerated={hasGenerated}
-              canContinue={canContinue()}
-              onBack={handleBack}
-              onNext={step === 0 ? handleNext : handleSubmit}
-            />
-          )}
+          <View className="pb-8">
+            <View className="mt-4">
+              {isLoading ? (
+                <LoadingStep />
+              ) : (
+                <Button
+                  className={`w-full h-[56px] border-2 border-primary/10 rounded-full ${canSubmit() ? 'bg-primary' : 'bg-muted'}`}
+                  size="lg"
+                  onPress={handleSubmit}
+                  disabled={!canSubmit()}>
+                  <Text
+                    className={`text-center text-base font-semibold ${
+                      canSubmit() ? 'text-primary-foreground' : 'text-muted-foreground'
+                    }`}>
+                    Create Project
+                  </Text>
+                </Button>
+              )}
+            </View>
+          </View>
         </View>
       </BottomSheetView>
     </BottomSheetModal>

@@ -378,16 +378,35 @@ export default function ProjectDetails() {
             <View className="flex-row w-full px-4 pb-4 gap-3">
               <Button
                 variant="outline"
-                className="flex-1 flex-row items-center justify-center rounded-full h-[56px] border-2 border-primary/10"
+                className={`flex-1 flex-row items-center justify-center rounded-full h-[56px] border-2 border-primary/10 ${
+                  !isOwner || project.status !== 'deployed' ? 'opacity-50' : ''
+                }`}
                 onPress={() => presentEditSheet.current?.()}
-                disabled={!isOwner}>
-                <Text className="text-base text-primary font-semibold leading-[22px]">Edit</Text>
+                disabled={!isOwner || project.status !== 'deployed'}>
+                <Text
+                  className={`text-base font-semibold leading-[22px] ${
+                    !isOwner || project.status !== 'deployed'
+                      ? 'text-muted-foreground'
+                      : 'text-primary'
+                  }`}>
+                  Edit
+                </Text>
               </Button>
+
               <Button
-                className="flex-1 flex-row items-center justify-center rounded-full h-[56px] border-2 border-primary/10"
+                className={`flex-1 flex-row items-center justify-center rounded-full h-[56px] border-2 border-primary/10 ${
+                  !project?.custom_domain || project.status !== 'deployed'
+                    ? 'opacity-50 bg-muted'
+                    : 'bg-primary'
+                }`}
                 onPress={handleOpen}
-                disabled={!project?.custom_domain}>
-                <Text className="text-base font-semibold text-primary-foreground leading-[22px]">
+                disabled={!project?.custom_domain || project.status !== 'deployed'}>
+                <Text
+                  className={`text-base font-semibold leading-[22px] ${
+                    !project?.custom_domain || project.status !== 'deployed'
+                      ? 'text-muted-foreground'
+                      : 'text-primary-foreground'
+                  }`}>
                   Open
                 </Text>
               </Button>
