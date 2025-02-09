@@ -126,16 +126,16 @@ const ProjectCardSkeleton = ({ index }: { index: number }) => {
   });
 
   return (
-    <View className="bg-card/80 backdrop-blur-md rounded-2xl py-5 px-5 mb-4 border border-border overflow-hidden">
+    <View className="bg-card/80 backdrop-blur-md rounded-2xl py-4 px-4 mb-3 border border-border overflow-hidden">
       <View>
-        <View className="flex-row items-center mb-3">
+        <View className="flex-row items-center mb-2.5">
           <View className="w-10 h-10 rounded-xl bg-muted mr-3 overflow-hidden" />
           <View className="flex-1">
-            <View className="h-6 bg-muted rounded-lg w-3/4" />
+            <View className="h-5 bg-muted rounded-lg w-3/4" />
           </View>
         </View>
-        <View className="h-4 bg-muted rounded-lg w-full mb-2" />
-        <View className="h-4 bg-muted rounded-lg w-2/3" />
+        <View className="h-[22px] bg-muted rounded-lg w-full mb-1.5" />
+        <View className="h-[22px] bg-muted rounded-lg w-2/3" />
         <Animated.View
           className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
           style={shimmerStyle}

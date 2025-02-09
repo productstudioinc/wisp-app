@@ -84,6 +84,12 @@ const config: ExpoConfig = {
         url: 'https://sentry.io/',
       },
     ],
+    [
+      'expo-asset',
+      {
+        assets: ['assets/images/icon-wand.png'],
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,

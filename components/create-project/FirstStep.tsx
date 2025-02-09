@@ -11,7 +11,6 @@ import { Text } from '~/components/ui/text';
 import { Input } from '~/components/ui/input';
 import { Upload } from '~/lib/icons/Upload';
 import { Image } from 'expo-image';
-import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 
@@ -117,10 +116,7 @@ export default function FirstStep({
   );
 
   return (
-    <Animated.View
-      className="flex-1"
-      entering={SlideInRight.duration(300)}
-      exiting={SlideOutLeft.duration(300)}>
+    <View className="flex-1">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1">
@@ -196,6 +192,6 @@ export default function FirstStep({
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </Animated.View>
+    </View>
   );
 }

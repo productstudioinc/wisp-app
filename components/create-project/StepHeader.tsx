@@ -10,18 +10,16 @@ interface StepHeaderProps {
   onReset: () => void;
 }
 
-export default function StepHeader({ step, hasGenerated, onReset }: StepHeaderProps) {
+export default function StepHeader({ step, onReset }: StepHeaderProps) {
   return (
-    <View className="h-14 mb-8 flex-row justify-between items-center">
+    <View className={`h-14 flex-row justify-between items-center ${step === 0 ? 'mb-8' : 'mb-4'}`}>
       <Text className="text-2xl font-title text-foreground">
-        {step === 0 ? 'Create a New App' : 'Personalize Your App'}
+        {step === 0 || step === 1.5 ? 'Create a New App' : 'Personalize Your App'}
       </Text>
 
-      {!hasGenerated && (
-        <Button variant="ghost" onPress={onReset} size="icon">
-          <Reset size={24} className="text-destructive" />
-        </Button>
-      )}
+      <Button variant="ghost" onPress={onReset} size="icon">
+        <Reset size={24} className="text-destructive" />
+      </Button>
     </View>
   );
 }
