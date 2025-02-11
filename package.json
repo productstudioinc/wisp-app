@@ -41,7 +41,7 @@
     "@sentry/react-native": "~6.3.0",
     "@shopify/react-native-skia": "^1.5.0",
     "@supabase/supabase-js": "^2.47.10",
-    "@superwall/react-native-superwall": "^1.4.4",
+    "@superwall/react-native-superwall": "^1.4.7",
     "@tabler/icons-react-native": "^3.28.1",
     "@types/uuid": "^10.0.0",
     "ai": "^4.0.36",

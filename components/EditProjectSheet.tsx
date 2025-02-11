@@ -113,16 +113,16 @@ export function EditProjectSheet({ onPresentRef, projectId }: EditProjectSheetPr
           <Textarea
             defaultValue=""
             onChangeText={(text) => (promptRef.current = text)}
-            placeholder="e.g. Make it more minimalist, add a dark theme, or change the color scheme to be more vibrant"
+            placeholder="Make it more minimalist, add a dark theme, or change the color scheme to be more vibrant"
             className="flex-1 mb-8"
           />
 
-          <View className="pb-6">
+          <View className="pb-8">
             <Button
               className="w-full h-[56px] rounded-full"
               disabled={isLoading}
               onPress={handleSubmit}>
-              <Text className="text-base font-semibold text-primary-foreground">
+              <Text className="text-lg font-semibold text-primary-foreground">
                 {isLoading ? 'Updating...' : 'Update'}
               </Text>
             </Button>

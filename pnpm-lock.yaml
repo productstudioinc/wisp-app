@@ -78,8 +78,8 @@ importers:
         specifier: ^2.47.10
         version: 2.47.10
       '@superwall/react-native-superwall':
-        specifier: ^1.4.4
-        version: 1.4.4(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(encoding@0.1.13)(react@18.3.1))(react@18.3.1)
+        specifier: ^1.4.7
+        version: 1.4.7(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(encoding@0.1.13)(react@18.3.1))(react@18.3.1)
       '@tabler/icons-react-native':
         specifier: ^3.28.1
         version: 3.28.1(react@18.3.1)
@@ -2130,8 +2130,8 @@ packages:
   '@supabase/supabase-js@2.47.10':
     resolution: {integrity: sha512-vJfPF820Ho5WILYHfKiBykDQ1SB9odTHrRZ0JxHfuLMC8GRvv21YLkUZQK7/rSVCkLvD6/ZwMWaOAfdUd//guw==}
 
-  '@superwall/react-native-superwall@1.4.4':
-    resolution: {integrity: sha512-sScf1SkH+atlckqf2aVWHsxGtY4wUOxd6c0YAsCOTL1RCgGsjxRGyOcrd4b2+MQxRax6V0+8O2GMRS4wX///nQ==}
+  '@superwall/react-native-superwall@1.4.7':
+    resolution: {integrity: sha512-z7Vn6wsiTafplHmZs4Sh1pDeLft0J10WWMrxOA1y5CtwiY50tMFssSJoSeX3zUcg8IosrKHFa+waTWdFyYzljg==}
     engines: {node: '>= 18.0.0'}
     peerDependencies:
       react: '*'
@@ -8149,7 +8149,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@superwall/react-native-superwall@1.4.4(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(encoding@0.1.13)(react@18.3.1))(react@18.3.1)':
+  '@superwall/react-native-superwall@1.4.7(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(encoding@0.1.13)(react@18.3.1))(react@18.3.1)':
     dependencies:
       events: 3.3.0
       react: 18.3.1

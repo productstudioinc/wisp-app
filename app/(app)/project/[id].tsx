@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, Alert, ActionSheetIOS } from 'react-native';
+import { View, Text, Image, ScrollView, Alert, ActionSheetIOS, Animated } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatDistanceToNow } from 'date-fns';
@@ -49,6 +49,12 @@ export default function ProjectDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [40, 60],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
 
   const fetchProject = useCallback(async () => {
     try {
@@ -243,6 +249,24 @@ export default function ProjectDetails() {
               className="w-10 h-10 -ml-2 items-center justify-center">
               <ChevronLeft size={22} className="text-foreground" />
             </TouchableOpacity>
+
+            <Animated.Text
+              numberOfLines={1}
+              className="text-base font-semibold text-foreground absolute left-14 right-24"
+              style={{
+                opacity: headerOpacity,
+                transform: [
+                  {
+                    translateY: headerOpacity.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [10, 0],
+                    }),
+                  },
+                ],
+              }}>
+              {project?.display_name}
+            </Animated.Text>
+
             <View className="flex-row items-center">
               <TouchableOpacity
                 onPress={handleShare}
@@ -261,7 +285,13 @@ export default function ProjectDetails() {
           </View>
         </View>
 
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 120 }}>
+        <Animated.ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 120 }}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+            useNativeDriver: true,
+          })}
+          scrollEventThrottle={16}>
           <View className="px-4 mb-6">
             <View className="flex-row items-start">
               <View className="w-24 h-24 rounded-[18px] bg-muted overflow-hidden shadow-lg">
@@ -371,11 +401,11 @@ export default function ProjectDetails() {
               )}
             </View>
           </View>
-        </ScrollView>
+        </Animated.ScrollView>
 
         <GradientBlur height={140}>
           <SafeAreaView edges={['bottom']} className="flex-1 justify-end">
-            <View className="flex-row w-full px-4 pb-4 gap-3">
+            <View className="flex-row w-full px-4 gap-3">
               <Button
                 variant="outline"
                 className={`flex-1 flex-row items-center justify-center rounded-full h-[56px] border-2 border-primary/10 ${

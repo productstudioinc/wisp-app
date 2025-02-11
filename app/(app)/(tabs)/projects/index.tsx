@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Text, View, ScrollView, TouchableOpacity, Image, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
-  FadeInUp,
   Layout,
   useAnimatedStyle,
   withSpring,
@@ -12,6 +11,8 @@ import Animated, {
   withRepeat,
   withSequence,
   interpolate,
+  SlideInLeft,
+  FadeIn,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { CreateProjectSheet } from '~/components/CreateProjectSheet';
@@ -23,7 +24,15 @@ import { formatDistanceToNow } from 'date-fns';
 import { useRouter } from 'expo-router';
 import { Project, ProjectStatus, useProjectsStore, projectsActions } from '~/lib/stores/projects';
 
-const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
+const ProjectCard = ({
+  project,
+  index,
+  isNewProject,
+}: {
+  project: Project;
+  index: number;
+  isNewProject?: boolean;
+}) => {
   const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
 
@@ -35,8 +44,8 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
     } else {
       pulseAnim.value = withRepeat(
         withSequence(withTiming(1, { duration: 1000 }), withTiming(0, { duration: 1000 })),
-        -1, // Infinite repetition
-        true, // Reverse animation
+        -1,
+        true,
       );
     }
   }, [project.status]);
@@ -84,7 +93,10 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
   const faviconUrl = project.custom_domain ? `https://${project.custom_domain}/favicon.png` : null;
 
   return (
-    <Animated.View entering={FadeInUp.delay(index * 100)} layout={Layout} style={animatedStyle}>
+    <Animated.View
+      entering={isNewProject ? SlideInLeft.springify().mass(0.5) : undefined}
+      layout={Layout.springify().mass(0.5)}
+      style={animatedStyle}>
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={1}
@@ -143,6 +155,7 @@ const HomeScreen = () => {
   const [presentCreateProject, setPresentCreateProject] = useState<(() => void) | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const { projects, isLoading, error } = useProjectsStore();
+  const [newProjectIds, setNewProjectIds] = useState<Set<string>>(new Set());
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -153,7 +166,29 @@ const HomeScreen = () => {
   useEffect(() => {
     projectsActions.fetchProjects();
     const cleanup = projectsActions.setupRealtimeSubscription();
-    return cleanup;
+
+    // Track new projects from realtime updates
+    const unsubscribe = useProjectsStore.subscribe((state, prevState) => {
+      const prevIds = new Set(prevState.projects.map((p) => p.id));
+      const newIds = state.projects.filter((p) => !prevIds.has(p.id)).map((p) => p.id);
+
+      if (newIds.length > 0) {
+        setNewProjectIds((prev) => new Set([...prev, ...newIds]));
+        // Clear the new project status after animation
+        setTimeout(() => {
+          setNewProjectIds((prev) => {
+            const updated = new Set(prev);
+            newIds.forEach((id) => updated.delete(id));
+            return updated;
+          });
+        }, 1000);
+      }
+    });
+
+    return () => {
+      cleanup();
+      unsubscribe();
+    };
   }, []);
 
   const handlePresentRef = useCallback((present: () => void) => {
@@ -188,7 +223,12 @@ const HomeScreen = () => {
               }}>
               <View>
                 {projects.map((project, index) => (
-                  <ProjectCard key={project.id} project={project} index={index} />
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    index={index}
+                    isNewProject={newProjectIds.has(project.id)}
+                  />
                 ))}
               </View>
             </ScrollView>

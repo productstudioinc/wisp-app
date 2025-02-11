@@ -46,9 +46,21 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
   error: null,
   realtimeChannel: null,
   setProjects: (projects) => set({ projects }),
-  addProject: (project) => set((state) => ({ 
-    projects: [...state.projects, project] 
-  })),
+  addProject: (project) => set((state) => {
+    // Find the correct position to insert the new project based on created_at
+    const newProjects = [...state.projects];
+    const insertIndex = newProjects.findIndex(
+      (p) => new Date(p.created_at!) < new Date(project.created_at!)
+    );
+    
+    if (insertIndex === -1) {
+      newProjects.push(project);
+    } else {
+      newProjects.splice(insertIndex, 0, project);
+    }
+
+    return { projects: newProjects };
+  }),
   updateProject: (id, updates) => set((state) => ({
     projects: state.projects.map((project) =>
       project.id === id ? { ...project, ...updates } : project

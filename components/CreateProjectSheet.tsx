@@ -233,22 +233,20 @@ export function CreateProjectSheet({ onPresentRef }: CreateProjectSheetProps) {
 
           <View className="pb-8">
             <View className="mt-4">
-              {isLoading ? (
-                <LoadingStep />
-              ) : (
-                <Button
-                  className={`w-full h-[56px] border-2 border-primary/10 rounded-full ${canSubmit() ? 'bg-primary' : 'bg-muted'}`}
-                  size="lg"
-                  onPress={handleSubmit}
-                  disabled={!canSubmit()}>
-                  <Text
-                    className={`text-center text-lg font-semibold ${
-                      canSubmit() ? 'text-primary-foreground' : 'text-muted-foreground'
-                    }`}>
-                    Create Project
-                  </Text>
-                </Button>
-              )}
+              <Button
+                className={`w-full h-[56px] border-2 border-primary/10 rounded-full ${
+                  !isLoading && canSubmit() ? 'bg-primary' : 'bg-muted'
+                }`}
+                size="lg"
+                onPress={handleSubmit}
+                disabled={isLoading || !canSubmit()}>
+                <Text
+                  className={`text-center text-lg font-semibold ${
+                    !isLoading && canSubmit() ? 'text-primary-foreground' : 'text-muted-foreground'
+                  }`}>
+                  {isLoading ? 'Creating Project...' : 'Create Project'}
+                </Text>
+              </Button>
             </View>
           </View>
         </View>
